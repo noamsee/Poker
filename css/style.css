@@ -1,12 +1,15 @@
 :root {
-    --bg-dark: #0a0d14;
-    --table-felt: radial-gradient(circle at 50% 50%, #1c5230 0%, #123820 65%, #0a2012 100%);
-    --wood-rim: linear-gradient(135deg, #3d2110 0%, #5e3415 50%, #201006 100%);
+    --bg-dark: #070a0f;
+    --table-felt: radial-gradient(ellipse at 50% 50%, #1a5732 0%, #103820 65%, #081d11 100%);
+    --wood-rim: linear-gradient(135deg, #422310 0%, #633618 50%, #201006 100%);
     --gold: #f59e0b;
     --gold-glow: rgba(245, 158, 11, 0.45);
     --gold-border: #d97706;
     --card-red: #c51624;
     --card-black: #15181e;
+    --btn-fold: linear-gradient(180deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%);
+    --btn-call: linear-gradient(180deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
+    --btn-raise: linear-gradient(180deg, #22c55e 0%, #16a34a 50%, #15803d 100%);
     --text-light: #f8fafc;
     --text-muted: #94a3b8;
 }
@@ -17,24 +20,123 @@
     padding: 0;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    background: var(--bg-dark);
+    color: var(--text-light);
+    overflow: hidden;
+    position: fixed;
 }
 
 body {
-    background: var(--bg-dark);
-    color: var(--text-light);
-    height: 100vh;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
 }
 
-/* Header */
+/* =================================================== */
+/* ORIENTATION PROMPT (Mobile Portrait)                */
+/* =================================================== */
+.orientation-prompt {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(7, 10, 15, 0.98);
+    z-index: 9999;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 24px;
+}
+
+@media (orientation: portrait) and (max-width: 900px) {
+    .orientation-prompt:not(.dismissed) {
+        display: flex;
+    }
+}
+
+.rotate-phone-anim {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.phone-icon {
+    width: 44px;
+    height: 72px;
+    border: 3px solid var(--gold);
+    border-radius: 8px;
+    animation: rotate-phone 2.5s infinite ease-in-out;
+}
+
+@keyframes rotate-phone {
+    0%, 15% { transform: rotate(0deg); }
+    50%, 85% { transform: rotate(90deg); }
+    100% { transform: rotate(0deg); }
+}
+
+.rotate-arrow {
+    position: absolute;
+    font-size: 2rem;
+    color: var(--gold);
+    animation: spin-arrow 2.5s infinite linear;
+}
+
+@keyframes spin-arrow {
+    0% { transform: scale(0.8) rotate(0deg); opacity: 0.6; }
+    50% { transform: scale(1.1) rotate(180deg); opacity: 1; }
+    100% { transform: scale(0.8) rotate(360deg); opacity: 0.6; }
+}
+
+.orientation-prompt h2 {
+    font-size: 1.4rem;
+    color: var(--gold);
+    margin-bottom: 10px;
+}
+
+.orientation-prompt p {
+    font-size: 0.95rem;
+    color: #cbd5e1;
+    max-width: 320px;
+    line-height: 1.4;
+    margin-bottom: 24px;
+}
+
+.btn-dismiss-rotate {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: var(--text-muted);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+/* =================================================== */
+/* HEADER                                              */
+/* =================================================== */
 .game-header {
+    height: 42px;
+    min-height: 42px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 24px;
-    background: rgba(10, 13, 20, 0.98);
+    padding: 0 16px;
+    background: rgba(10, 14, 22, 0.95);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     z-index: 10;
 }
@@ -42,50 +144,84 @@ body {
 .logo {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 1.25rem;
+    gap: 6px;
+    font-size: 1.05rem;
     font-weight: 800;
     color: var(--gold);
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
+}
+
+.logo-spade {
+    font-size: 1.2rem;
 }
 
 .header-stats {
     display: flex;
-    gap: 24px;
+    gap: 16px;
+    font-size: 0.8rem;
 }
 
-.stat-item {
-    font-size: 0.9rem;
+.stat-label {
     color: var(--text-muted);
 }
 
-.stat-item span {
+.stat-val {
     font-weight: bold;
     color: var(--text-light);
 }
 
+.stat-val.highlight {
+    color: var(--gold);
+    font-size: 0.85rem;
+}
+
 .header-actions {
     display: flex;
-    gap: 10px;
+    align-items: center;
+    gap: 8px;
 }
 
 .btn-header {
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.15);
     color: var(--text-light);
-    padding: 6px 14px;
+    padding: 4px 10px;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 0.85rem;
+    font-size: 0.75rem;
+    font-weight: 600;
     transition: all 0.2s;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .btn-header:hover {
-    background: rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.2);
     border-color: var(--gold);
 }
 
-/* Main Arena */
+.btn-icon {
+    padding: 0;
+    width: 28px;
+    font-size: 0.9rem;
+}
+
+.btn-deal-hand {
+    background: var(--gold);
+    color: #000;
+    border-color: var(--gold-border);
+    font-weight: 800;
+}
+
+.btn-deal-hand:hover {
+    background: #d97706;
+}
+
+/* =================================================== */
+/* GAME ARENA & CASINO TABLE (Landscape Optimized)    */
+/* =================================================== */
 .game-arena {
     flex: 1;
     display: flex;
@@ -93,27 +229,27 @@ body {
     overflow: hidden;
 }
 
-/* Table Container */
 .table-container {
     flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
-    padding: 15px;
+    padding: 8px 12px;
 }
 
 .poker-table {
-    width: 92%;
-    max-width: 1020px;
-    height: 530px;
+    width: 100%;
+    max-width: 960px;
+    height: 100%;
+    max-height: 460px;
     background: var(--table-felt);
-    border-radius: 265px;
-    border: 18px solid #3d2110;
+    border-radius: 230px;
+    border: 14px solid #3d2110;
     box-shadow: 
-        inset 0 0 60px rgba(0, 0, 0, 0.85),
-        0 20px 50px rgba(0, 0, 0, 0.9),
-        0 0 0 4px var(--gold-border);
+        inset 0 0 50px rgba(0, 0, 0, 0.85),
+        0 12px 35px rgba(0, 0, 0, 0.9),
+        0 0 0 3px var(--gold-border);
     position: relative;
     display: flex;
     justify-content: center;
@@ -122,119 +258,120 @@ body {
 
 .table-felt-inner-line {
     position: absolute;
-    width: calc(100% - 70px);
-    height: calc(100% - 70px);
-    border-radius: 230px;
-    border: 2px dashed rgba(245, 158, 11, 0.2);
+    width: calc(100% - 48px);
+    height: calc(100% - 48px);
+    border-radius: 200px;
+    border: 1.5px dashed rgba(245, 158, 11, 0.22);
     pointer-events: none;
 }
 
-/* Table Center */
+/* Table Center: Pot & Community Cards */
 .table-center {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 14px;
+    gap: 8px;
     z-index: 2;
+    transform: translateY(-8px);
 }
 
 .pot-display {
-    background: rgba(0, 0, 0, 0.65);
+    background: rgba(0, 0, 0, 0.7);
     border: 1.5px solid var(--gold);
-    padding: 6px 22px;
+    padding: 3px 16px;
     border-radius: 20px;
-    font-size: 1.15rem;
+    font-size: 0.95rem;
     font-weight: 800;
     color: var(--gold);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
     display: flex;
     align-items: center;
-    gap: 8px;
-    letter-spacing: 0.5px;
+    gap: 6px;
 }
 
 .community-cards-container {
     display: flex;
-    gap: 10px;
-    min-height: 108px;
+    gap: 6px;
+    min-height: 84px;
     align-items: center;
     justify-content: center;
 }
 
 .community-card-slot {
-    width: 72px;
-    height: 104px;
-    border: 2px dashed rgba(255, 255, 255, 0.18);
-    border-radius: 8px;
+    width: 58px;
+    height: 84px;
+    border: 1.5px dashed rgba(255, 255, 255, 0.18);
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .dealer-announcement {
-    background: rgba(10, 13, 20, 0.85);
+    background: rgba(7, 10, 15, 0.85);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 6px 18px;
-    border-radius: 12px;
-    font-size: 0.9rem;
+    padding: 3px 12px;
+    border-radius: 10px;
+    font-size: 0.75rem;
     color: #e2e8f0;
     text-align: center;
-    max-width: 440px;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
-    min-height: 30px;
+    max-width: 320px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
-/* Seats */
+/* =================================================== */
+/* PLAYER SEATS (Zynga-Style Circular/Pill Design)     */
+/* =================================================== */
 .seat {
     position: absolute;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
-    width: 155px;
-    transition: all 0.3s;
+    gap: 4px;
+    z-index: 4;
 }
 
-.seat-top {
-    top: -20px;
+/* SEAT POSITIONS */
+.seat-top-left {
+    top: 6px;
+    left: 14%;
+}
+
+.seat-top-center {
+    top: 6px;
     left: 50%;
     transform: translateX(-50%);
 }
 
-.seat-left {
-    top: 50%;
-    left: 20px;
-    transform: translateY(-50%);
+.seat-top-right {
+    top: 6px;
+    right: 14%;
 }
 
-.seat-right {
-    top: 50%;
-    right: 20px;
-    transform: translateY(-50%);
-}
-
-.seat-bottom {
-    bottom: -25px;
+.seat-bottom-center {
+    bottom: 6px;
     left: 50%;
     transform: translateX(-50%);
 }
 
 .player-badge {
-    background: rgba(15, 23, 42, 0.92);
+    background: rgba(15, 23, 42, 0.94);
     border: 1.5px solid rgba(255, 255, 255, 0.18);
-    border-radius: 12px;
-    padding: 6px 12px;
+    border-radius: 10px;
+    padding: 3px 8px;
     display: flex;
     align-items: center;
-    gap: 8px;
-    width: 100%;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    gap: 6px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.6);
     position: relative;
-    transition: all 0.2s;
+    min-width: 88px;
 }
 
 .player-avatar {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     line-height: 1;
 }
 
@@ -245,27 +382,48 @@ body {
 }
 
 .player-name {
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     font-weight: 700;
     white-space: nowrap;
-    text-overflow: ellipsis;
     overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .player-chips {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     color: var(--gold);
     font-weight: 800;
 }
 
+/* USER SEAT SPECIAL STYLING */
+.user-badge {
+    border-color: rgba(245, 158, 11, 0.5);
+    background: rgba(15, 23, 42, 0.98);
+}
+
+.user-hand-rank-pill {
+    background: rgba(0, 0, 0, 0.85);
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 2px 10px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+    white-space: nowrap;
+    max-width: 200px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
 .player-status-tag {
     position: absolute;
-    top: -9px;
-    right: 6px;
-    font-size: 0.65rem;
-    font-weight: 800;
+    top: -8px;
+    right: 4px;
+    font-size: 0.6rem;
+    font-weight: 900;
     text-transform: uppercase;
-    padding: 2px 6px;
+    padding: 1px 5px;
     border-radius: 4px;
     background: #475569;
     color: white;
@@ -278,14 +436,14 @@ body {
 
 .seat.active-turn .player-badge {
     border-color: var(--gold);
-    box-shadow: 0 0 20px var(--gold-glow);
-    animation: turn-pulse 1.4s infinite;
+    box-shadow: 0 0 16px var(--gold);
+    animation: turn-pulse 1.3s infinite;
 }
 
 @keyframes turn-pulse {
-    0% { transform: scale(1); box-shadow: 0 0 10px var(--gold-glow); }
-    50% { transform: scale(1.03); box-shadow: 0 0 25px var(--gold); }
-    100% { transform: scale(1); box-shadow: 0 0 10px var(--gold-glow); }
+    0% { transform: scale(1); box-shadow: 0 0 8px var(--gold); }
+    50% { transform: scale(1.04); box-shadow: 0 0 20px var(--gold); }
+    100% { transform: scale(1); box-shadow: 0 0 8px var(--gold); }
 }
 
 .seat.folded {
@@ -295,72 +453,98 @@ body {
 
 .hole-cards {
     display: flex;
-    gap: 6px;
+    gap: 4px;
     position: relative;
 }
 
-/* =================================================== */
-/* DECENT CASINO DECK OF CARDS STYLING                */
-/* =================================================== */
+/* Bet Chips In Front of Seat */
+.bet-chips {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid var(--gold);
+    border-radius: 10px;
+    padding: 1px 6px;
+    font-size: 0.7rem;
+    color: var(--gold);
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    z-index: 5;
+}
 
+.seat-top-left .bet-chips { bottom: -20px; left: 50%; transform: translateX(-50%); }
+.seat-top-center .bet-chips { bottom: -20px; left: 50%; transform: translateX(-50%); }
+.seat-top-right .bet-chips { bottom: -20px; left: 50%; transform: translateX(-50%); }
+.seat-bottom-center .bet-chips { top: -20px; left: 50%; transform: translateX(-50%); }
+
+/* Dealer Button */
+.dealer-button {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    background: #ffffff;
+    color: #000000;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 0.75rem;
+    border: 2px solid #000;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+    z-index: 6;
+    transition: all 0.4s ease-in-out;
+}
+
+/* =================================================== */
+/* PLAYING CARDS                                       */
+/* =================================================== */
 .poker-card {
-    width: 72px;
-    height: 104px;
-    border-radius: 7px;
+    width: 58px;
+    height: 84px;
+    border-radius: 6px;
     position: relative;
     perspective: 1000px;
-    box-shadow: 
-        0 4px 12px rgba(0, 0, 0, 0.4),
-        0 1px 3px rgba(0, 0, 0, 0.25);
-    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
     background: #fdfdfd;
     box-sizing: border-box;
 }
 
-.poker-card:hover {
-    transform: translateY(-4px) scale(1.04);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
-    z-index: 10;
+.user-cards .poker-card {
+    width: 64px;
+    height: 92px;
 }
 
 .card-inner {
     width: 100%;
     height: 100%;
-    border-radius: 7px;
+    border-radius: 6px;
     overflow: hidden;
 }
 
-/* FRONT FACE */
 .card-front {
     width: 100%;
     height: 100%;
     background: linear-gradient(135deg, #ffffff 0%, #fafafa 60%, #f4f4f5 100%);
     border: 1px solid rgba(0, 0, 0, 0.15);
-    border-radius: 7px;
-    box-sizing: border-box;
+    border-radius: 6px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 4px 5px;
+    padding: 3px 4px;
     position: relative;
 }
 
-/* COLOR SCHEMES */
-.poker-card.red {
-    color: var(--card-red);
-}
+.poker-card.red { color: var(--card-red); }
+.poker-card.black { color: var(--card-black); }
 
-.poker-card.black {
-    color: var(--card-black);
-}
-
-/* CORNER INDICES */
 .card-corner {
     display: flex;
     flex-direction: column;
     align-items: center;
     line-height: 1;
-    width: 14px;
+    width: 12px;
     z-index: 3;
 }
 
@@ -371,15 +555,17 @@ body {
 
 .card-rank {
     font-family: 'Georgia', 'Times New Roman', serif;
-    font-size: 1.05rem;
+    font-size: 0.9rem;
     font-weight: 900;
-    letter-spacing: -0.5px;
+}
+
+.user-cards .card-rank {
+    font-size: 1.05rem;
 }
 
 .card-corner-suit {
-    width: 11px;
-    height: 11px;
-    margin-top: 1px;
+    width: 9px;
+    height: 9px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -390,20 +576,18 @@ body {
     height: 100%;
 }
 
-/* CENTER BODY */
 .card-body {
     position: absolute;
-    top: 6px;
-    bottom: 6px;
-    left: 16px;
-    right: 16px;
+    top: 4px;
+    bottom: 4px;
+    left: 12px;
+    right: 12px;
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 2;
 }
 
-/* PIPS MATRIX GRID (2 to 10) */
 .pips-matrix {
     width: 100%;
     height: 100%;
@@ -422,8 +606,8 @@ body {
 }
 
 .pip {
-    width: 13px;
-    height: 13px;
+    width: 10px;
+    height: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -436,10 +620,8 @@ body {
 .pip svg, .suit-icon {
     width: 100%;
     height: 100%;
-    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.08));
 }
 
-/* ACE OF SPADES & ACES */
 .ace-center {
     display: flex;
     flex-direction: column;
@@ -450,33 +632,22 @@ body {
 }
 
 .large-suit-pip {
-    width: 34px;
-    height: 34px;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
-}
-
-.ornate-spade {
-    position: relative;
-    width: 100%;
-    height: 100%;
+    width: 26px;
+    height: 26px;
 }
 
 .ornate-spade-svg {
-    width: 44px;
-    height: 48px;
-    filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.3));
+    width: 32px;
+    height: 36px;
 }
 
 .ace-badge {
-    font-size: 0.55rem;
+    font-size: 0.45rem;
     font-weight: 900;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     color: #92400e;
-    margin-top: 1px;
-    font-family: 'Georgia', serif;
 }
 
-/* COURT CARDS (J, Q, K) */
 .court-art {
     width: 100%;
     height: 100%;
@@ -488,28 +659,25 @@ body {
 .court-svg {
     width: 100%;
     height: 100%;
-    border-radius: 4px;
+    border-radius: 3px;
     background: #fafaf9;
-    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1);
 }
 
-/* BACK OF CARDS (Ornate Casino Deck Back) */
 .card-back {
     width: 100%;
     height: 100%;
     background: #ffffff;
     border: 1px solid rgba(0, 0, 0, 0.25);
-    border-radius: 7px;
-    padding: 4px;
-    box-sizing: border-box;
+    border-radius: 6px;
+    padding: 3px;
 }
 
 .back-inner-frame {
     width: 100%;
     height: 100%;
     background: radial-gradient(circle at 50% 50%, #1e3a8a 0%, #172554 100%);
-    border-radius: 4px;
-    border: 1.5px solid #d97706;
+    border-radius: 3px;
+    border: 1px solid #d97706;
     position: relative;
     overflow: hidden;
     display: flex;
@@ -517,123 +685,161 @@ body {
     justify-content: center;
 }
 
-.back-filigree-pattern {
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background-image: 
-        repeating-linear-gradient(45deg, rgba(217, 119, 6, 0.2) 0, rgba(217, 119, 6, 0.2) 2px, transparent 2px, transparent 8px),
-        repeating-linear-gradient(-45deg, rgba(217, 119, 6, 0.2) 0, rgba(217, 119, 6, 0.2) 2px, transparent 2px, transparent 8px);
-    opacity: 0.8;
-}
-
 .back-seal {
     position: relative;
-    width: 28px;
-    height: 28px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     background: #0f172a;
-    border: 1.5px solid #d97706;
+    border: 1px solid #d97706;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #d97706;
-    font-size: 0.95rem;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+    font-size: 0.75rem;
     z-index: 2;
 }
 
-/* Winning Card Glow */
-.poker-card.winning-card {
-    border: 2px solid var(--gold) !important;
-    box-shadow: 0 0 20px var(--gold) !important;
-    transform: translateY(-8px) scale(1.05) !important;
+/* =================================================== */
+/* ZYNGA-STYLE BOTTOM ACTION BAR                       */
+/* =================================================== */
+.action-bar {
+    position: relative;
+    background: linear-gradient(180deg, rgba(10, 14, 22, 0.9) 0%, rgba(5, 7, 12, 0.98) 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 6px 14px max(8px, env(safe-area-inset-bottom, 8px));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 20;
 }
 
-/* Chips In Front */
-.bet-chips {
-    position: absolute;
-    background: rgba(0, 0, 0, 0.75);
+/* Slide-up Raise Panel */
+.raise-panel {
+    display: none;
+    width: 100%;
+    max-width: 520px;
+    background: rgba(15, 23, 42, 0.96);
     border: 1.5px solid var(--gold);
     border-radius: 12px;
-    padding: 2px 8px;
-    font-size: 0.75rem;
-    color: var(--gold);
-    font-weight: 800;
-    display: flex;
-    align-items: center;
-    gap: 4px;
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.7);
+    animation: slide-up 0.2s ease-out;
 }
 
-.seat-top .bet-chips { bottom: -28px; }
-.seat-bottom .bet-chips { top: -28px; }
-.seat-left .bet-chips { right: -60px; top: 50%; transform: translateY(-50%); }
-.seat-right .bet-chips { left: -60px; top: 50%; transform: translateY(-50%); }
-
-/* Dealer Button */
-.dealer-button {
-    position: absolute;
-    width: 30px;
-    height: 30px;
-    background: #ffffff;
-    color: #000000;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 900;
-    font-size: 0.9rem;
-    border: 2.5px solid #000;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.7);
-    z-index: 5;
-    transition: all 0.4s ease-in-out;
+.raise-panel.active {
+    display: block;
 }
 
-/* Action Bar */
-.action-bar {
-    background: rgba(10, 13, 20, 0.98);
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 14px 24px;
+@keyframes slide-up {
+    from { transform: translateY(10px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.raise-panel-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 20px;
-    z-index: 10;
+    margin-bottom: 6px;
 }
 
-.hand-strength-preview {
-    display: flex;
-    flex-direction: column;
-    min-width: 220px;
-}
-
-.hand-strength-label {
+.raise-panel-title {
     font-size: 0.75rem;
-    color: var(--text-muted);
+    font-weight: 800;
+    color: var(--gold);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
-.hand-strength-value {
-    font-size: 1.05rem;
-    font-weight: 800;
-    color: var(--gold);
+.btn-close-raise {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    font-size: 1rem;
+    cursor: pointer;
 }
 
-.action-buttons-group {
+.raise-presets {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.btn-preset {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: #f1f5f9;
+    padding: 4px 0;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+}
+
+.btn-preset:active {
+    background: var(--gold);
+    color: #000;
+}
+
+.raise-slider-row {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
+}
+
+.btn-stepper {
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.raise-slider {
+    flex: 1;
+    height: 8px;
+    accent-color: var(--gold);
+}
+
+/* 3 Main Action Buttons Row */
+.action-buttons-row {
+    display: flex;
+    width: 100%;
+    max-width: 520px;
+    gap: 10px;
+    justify-content: center;
 }
 
 .action-btn {
-    padding: 12px 24px;
+    flex: 1;
+    height: 44px;
     border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 800;
     border: none;
     cursor: pointer;
-    transition: all 0.2s;
-    min-width: 110px;
+    font-size: 0.95rem;
+    font-weight: 900;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    transition: transform 0.1s, filter 0.1s;
+    letter-spacing: 0.5px;
+}
+
+.action-btn:active:not(:disabled) {
+    transform: translateY(2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .action-btn:disabled {
@@ -643,110 +849,73 @@ body {
 }
 
 .btn-fold {
-    background: #dc2626;
-    color: white;
-}
-.btn-fold:not(:disabled):hover {
-    background: #b91c1c;
-    transform: translateY(-2px);
+    background: var(--btn-fold);
+    border-bottom: 3px solid #7f1d1d;
 }
 
 .btn-check-call {
-    background: #2563eb;
-    color: white;
-}
-.btn-check-call:not(:disabled):hover {
-    background: #1d4ed8;
-    transform: translateY(-2px);
-}
-
-.raise-controls {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.raise-presets {
-    display: flex;
-    gap: 6px;
-}
-
-.btn-preset {
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: #e2e8f0;
-    padding: 3px 8px;
-    font-size: 0.75rem;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.btn-preset:hover {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: var(--gold);
-}
-
-.raise-inputs {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.raise-slider {
-    width: 140px;
-    accent-color: var(--gold);
+    background: var(--btn-call);
+    border-bottom: 3px solid #1e3a8a;
 }
 
 .btn-raise {
-    background: #16a34a;
-    color: white;
-}
-.btn-raise:not(:disabled):hover {
-    background: #15803d;
-    transform: translateY(-2px);
+    background: var(--btn-raise);
+    border-bottom: 3px solid #14532d;
 }
 
-/* History Drawer */
+/* =================================================== */
+/* HISTORY DRAWER & MODAL                              */
+/* =================================================== */
 .history-drawer {
-    width: 290px;
-    background: rgba(10, 13, 20, 0.98);
-    border-left: 1px solid rgba(255, 255, 255, 0.08);
+    position: absolute;
+    top: 0; right: 0; bottom: 0;
+    width: 280px;
+    background: rgba(10, 14, 22, 0.98);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
     flex-direction: column;
-    height: 100%;
-    transition: transform 0.3s;
+    z-index: 50;
+    transition: transform 0.25s ease-in-out;
 }
 
 .history-drawer.closed {
-    display: none;
+    transform: translateX(100%);
 }
 
 .drawer-header {
-    padding: 12px 16px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-weight: 800;
-    font-size: 0.95rem;
+    font-size: 0.85rem;
+}
+
+.btn-close-drawer {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.1rem;
+    cursor: pointer;
 }
 
 .log-list {
     flex: 1;
     overflow-y: auto;
-    padding: 12px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    font-size: 0.8rem;
+    gap: 6px;
+    font-size: 0.75rem;
 }
 
 .log-entry {
-    padding: 6px 10px;
-    border-radius: 6px;
+    padding: 4px 8px;
+    border-radius: 4px;
     background: rgba(255, 255, 255, 0.04);
     border-left: 3px solid #64748b;
-    line-height: 1.4;
+    line-height: 1.3;
 }
 
 .log-entry.header { border-left-color: var(--gold); font-weight: bold; color: var(--gold); }
@@ -756,17 +925,10 @@ body {
 .log-entry.fold { border-left-color: #dc2626; opacity: 0.7; }
 .log-entry.allin { border-left-color: #ea580c; font-weight: bold; }
 
-.log-time {
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    margin-right: 4px;
-}
-
-/* Modal Popup */
 .modal-overlay {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.82);
     display: none;
     justify-content: center;
     align-items: center;
@@ -780,227 +942,34 @@ body {
 .modal-content {
     background: #0f172a;
     border: 2px solid var(--gold);
-    border-radius: 16px;
-    padding: 28px;
-    max-width: 480px;
-    width: 90%;
+    border-radius: 14px;
+    padding: 22px;
+    max-width: 400px;
+    width: 88%;
     text-align: center;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.85);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9);
 }
 
 .modal-title {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     color: var(--gold);
-    margin-bottom: 12px;
+    margin-bottom: 8px;
 }
 
 .modal-body {
-    margin-bottom: 20px;
-    font-size: 1rem;
+    margin-bottom: 16px;
+    font-size: 0.9rem;
     color: #e2e8f0;
-    line-height: 1.5;
-}
-
-.modal-actions {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
+    line-height: 1.4;
 }
 
 .btn-primary {
     background: var(--gold);
     color: #000;
     font-weight: 800;
-    padding: 10px 24px;
+    padding: 8px 20px;
     border: none;
-    border-radius: 8px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 1rem;
-    transition: all 0.2s;
+    font-size: 0.9rem;
 }
-
-.btn-primary:hover {
-    background: #d97706;
-    transform: scale(1.03);
-}
-
-/* =================================================== */
-/* MOBILE & PHONE RESPONSIVE STYLING                  */
-/* =================================================== */
-@media (max-width: 768px) {
-    .game-header {
-        padding: 8px 12px;
-        flex-wrap: wrap;
-        gap: 6px;
-    }
-
-    .logo {
-        font-size: 1.05rem;
-    }
-
-    .header-stats {
-        gap: 10px;
-        font-size: 0.78rem;
-    }
-
-    .header-actions {
-        gap: 6px;
-    }
-
-    .btn-header {
-        padding: 4px 8px;
-        font-size: 0.75rem;
-    }
-
-    .btn-deal-hand {
-        background: var(--gold);
-        color: #000;
-        font-weight: 800;
-    }
-
-    .table-container {
-        padding: 4px;
-    }
-
-    .poker-table {
-        width: 98%;
-        height: min(58vh, 440px);
-        min-height: 370px;
-        border-width: 10px;
-        border-radius: 170px;
-    }
-
-    .poker-card {
-        width: 52px;
-        height: 76px;
-    }
-
-    .card-rank {
-        font-size: 0.85rem;
-    }
-
-    .card-corner-suit {
-        width: 9px;
-        height: 9px;
-    }
-
-    .pip {
-        width: 10px;
-        height: 10px;
-    }
-
-    .community-card-slot {
-        width: 52px;
-        height: 76px;
-    }
-
-    .community-cards-container {
-        gap: 5px;
-        min-height: 78px;
-    }
-
-    .large-suit-pip {
-        width: 24px;
-        height: 24px;
-    }
-
-    .ornate-spade-svg {
-        width: 32px;
-        height: 36px;
-    }
-
-    .seat {
-        width: 110px;
-    }
-
-    .seat-top {
-        top: -16px;
-    }
-
-    .seat-bottom {
-        bottom: -18px;
-    }
-
-    .seat-left {
-        left: 4px;
-    }
-
-    .seat-right {
-        right: 4px;
-    }
-
-    .player-avatar {
-        font-size: 1.2rem;
-    }
-
-    .player-name {
-        font-size: 0.72rem;
-    }
-
-    .player-chips {
-        font-size: 0.68rem;
-    }
-
-    .pot-display {
-        font-size: 0.92rem;
-        padding: 4px 12px;
-    }
-
-    .dealer-announcement {
-        font-size: 0.75rem;
-        padding: 4px 10px;
-        max-width: 260px;
-    }
-
-    .action-bar {
-        padding: 8px 12px env(safe-area-inset-bottom, 10px);
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .hand-strength-preview {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-        min-width: unset;
-    }
-
-    .action-buttons-group {
-        width: 100%;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 6px;
-    }
-
-    .action-btn {
-        flex: 1;
-        min-width: 75px;
-        padding: 9px 8px;
-        font-size: 0.82rem;
-    }
-
-    .raise-controls {
-        width: 100%;
-    }
-
-    .raise-presets {
-        justify-content: space-between;
-    }
-
-    .btn-preset {
-        flex: 1;
-        text-align: center;
-        padding: 4px 2px;
-        font-size: 0.7rem;
-    }
-
-    .raise-inputs {
-        width: 100%;
-    }
-
-    .raise-slider {
-        flex: 1;
-    }
-}
-

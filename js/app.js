@@ -1,5 +1,6 @@
 /**
  * UI Controller & Audio Synthesizer for Texas Hold'em
+ * Zynga Poker Inspired Mobile Landscape UX
  */
 
 class SoundEffects {
@@ -65,7 +66,7 @@ class SoundEffects {
         this.init();
         if (!this.ctx) return;
 
-        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        const notes = [523.25, 659.25, 783.99, 1046.50];
         notes.forEach((freq, idx) => {
             const osc = this.ctx.createOscillator();
             const gain = this.ctx.createGain();
@@ -88,6 +89,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const sfx = new SoundEffects();
     let handsPlayedCount = 0;
 
+    // Orientation Prompt
+    const orientationPrompt = document.getElementById('orientation-prompt');
+    const btnDismissOrientation = document.getElementById('btn-dismiss-orientation');
+    if (btnDismissOrientation && orientationPrompt) {
+        btnDismissOrientation.addEventListener('click', () => {
+            orientationPrompt.classList.add('dismissed');
+        });
+    }
+
     // DOM Elements
     const dealerBtn = document.getElementById('dealer-btn');
     const tablePot = document.getElementById('table-pot');
@@ -96,12 +106,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const userHandName = document.getElementById('user-hand-name');
     const headerBankroll = document.getElementById('header-bankroll');
     const headerHands = document.getElementById('header-hands');
+    const btnSoundToggle = document.getElementById('btn-sound-toggle');
 
     // Controls
     const btnFold = document.getElementById('btn-fold');
     const btnCheckCall = document.getElementById('btn-check-call');
-    const btnRaise = document.getElementById('btn-raise');
+    const btnCheckCallLabel = document.getElementById('btn-check-call-label');
+    const btnRaiseToggle = document.getElementById('btn-raise-toggle');
+    const btnRaiseLabel = document.getElementById('btn-raise-label');
+    const raisePanel = document.getElementById('raise-panel');
+    const btnCloseRaisePanel = document.getElementById('btn-close-raise-panel');
     const raiseSlider = document.getElementById('raise-slider');
+    const btnRaiseMinus = document.getElementById('btn-raise-minus');
+    const btnRaisePlus = document.getElementById('btn-raise-plus');
+
     const btnNewHand = document.getElementById('btn-new-hand');
     const btnRebuy = document.getElementById('btn-rebuy');
 
@@ -117,12 +135,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalBody = document.getElementById('modal-body');
     const btnModalNext = document.getElementById('btn-modal-next');
 
-    // Dealer Button Seat Coordinates
+    // Dealer Button Seat Coordinates (Landscape Optimized)
     const dealerPositions = {
-        0: { bottom: '130px', left: '50%', transform: 'translateX(-110px)' }, // You
-        1: { top: '100px', left: '50%', transform: 'translateX(-110px)' },    // Alex
-        2: { top: '50%', left: '170px', transform: 'translateY(-60px)' },     // Claire
-        3: { top: '50%', right: '170px', transform: 'translateY(-60px)' }     // Tom
+        0: { bottom: '110px', left: '50%', transform: 'translateX(-110px)' }, // You
+        1: { top: '70px', left: '16%', transform: 'none' },                  // Alex
+        2: { top: '70px', left: '50%', transform: 'translateX(-90px)' },     // Claire
+        3: { top: '70px', right: '16%', transform: 'none' }                 // Tom
     };
 
     function updateDealerButton(dealerIdx) {
@@ -253,8 +271,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!isMyTurn || human.folded || human.allIn || human.chips <= 0) {
             btnFold.disabled = true;
             btnCheckCall.disabled = true;
-            btnRaise.disabled = true;
+            btnRaiseToggle.disabled = true;
             raiseSlider.disabled = true;
+            raisePanel.classList.remove('active');
             return;
         }
 
@@ -263,11 +282,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Check or Call
         if (callAmount === 0) {
-            btnCheckCall.textContent = 'Check';
+            btnCheckCallLabel.textContent = 'CHECK';
             btnCheckCall.disabled = false;
         } else {
             const actualCall = Math.min(callAmount, human.chips);
-            btnCheckCall.textContent = `Call $${actualCall}`;
+            btnCheckCallLabel.textContent = `CALL $${actualCall}`;
             btnCheckCall.disabled = false;
         }
 
@@ -278,7 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (canWager) {
             raiseSlider.disabled = false;
-            btnRaise.disabled = false;
+            btnRaiseToggle.disabled = false;
 
             const sliderMin = Math.min(minToWager, human.chips + human.currentBet);
             const sliderMax = human.chips + human.currentBet;
@@ -289,8 +308,9 @@ document.addEventListener('DOMContentLoaded', () => {
             updateRaiseButtonLabel(sliderMin);
         } else {
             raiseSlider.disabled = true;
-            btnRaise.disabled = true;
-            btnRaise.textContent = isBet ? 'Bet' : 'Raise';
+            btnRaiseToggle.disabled = true;
+            btnRaiseLabel.textContent = isBet ? 'BET' : 'RAISE';
+            raisePanel.classList.remove('active');
         }
     }
 
@@ -298,11 +318,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const human = game.players[0];
         const isBet = game.currentBet === 0;
         if (amount >= human.chips + human.currentBet) {
-            btnRaise.textContent = `All-In ($${human.chips + human.currentBet})`;
+            btnRaiseLabel.textContent = `ALL-IN ($${human.chips + human.currentBet})`;
         } else if (isBet) {
-            btnRaise.textContent = `Bet $${amount}`;
+            btnRaiseLabel.textContent = `BET $${amount}`;
         } else {
-            btnRaise.textContent = `Raise to $${amount}`;
+            btnRaiseLabel.textContent = `RAISE TO $${amount}`;
         }
     }
 
@@ -310,6 +330,29 @@ document.addEventListener('DOMContentLoaded', () => {
     raiseSlider.addEventListener('input', (e) => {
         updateRaiseButtonLabel(parseInt(e.target.value));
     });
+
+    // Steppers +/-
+    btnRaiseMinus.addEventListener('click', () => {
+        const step = game.bigBlind;
+        const current = parseInt(raiseSlider.value);
+        const nextVal = Math.max(parseInt(raiseSlider.min), current - step);
+        raiseSlider.value = nextVal;
+        updateRaiseButtonLabel(nextVal);
+    });
+
+    btnRaisePlus.addEventListener('click', () => {
+        const step = game.bigBlind;
+        const current = parseInt(raiseSlider.value);
+        const nextVal = Math.min(parseInt(raiseSlider.max), current + step);
+        raiseSlider.value = nextVal;
+        updateRaiseButtonLabel(nextVal);
+    });
+
+    if (btnCloseRaisePanel) {
+        btnCloseRaisePanel.addEventListener('click', () => {
+            raisePanel.classList.remove('active');
+        });
+    }
 
     // Preset buttons
     document.querySelectorAll('.btn-preset').forEach(btn => {
@@ -342,11 +385,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Human Action Handlers
     btnFold.addEventListener('click', () => {
+        raisePanel.classList.remove('active');
         game.executeAction(game.players[0], 'fold');
         updateHumanControls(false);
     });
 
     btnCheckCall.addEventListener('click', () => {
+        raisePanel.classList.remove('active');
         const human = game.players[0];
         const callAmount = game.currentBet - human.currentBet;
         if (callAmount === 0) {
@@ -358,8 +403,18 @@ document.addEventListener('DOMContentLoaded', () => {
         updateHumanControls(false);
     });
 
-    btnRaise.addEventListener('click', () => {
+    // Raise / Bet toggle & submit
+    btnRaiseToggle.addEventListener('click', () => {
         const human = game.players[0];
+
+        // If panel is not open yet, open it to let player adjust amount
+        if (!raisePanel.classList.contains('active')) {
+            raisePanel.classList.add('active');
+            return;
+        }
+
+        // If panel is open, confirm the bet/raise!
+        raisePanel.classList.remove('active');
         const targetTotal = parseInt(raiseSlider.value);
         const amountToAdd = targetTotal - human.currentBet;
 
@@ -377,12 +432,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Deal Next Hand
     btnNewHand.addEventListener('click', () => {
         clearStatuses();
+        raisePanel.classList.remove('active');
         game.startNewHand();
     });
 
     btnModalNext.addEventListener('click', () => {
         resultModal.classList.remove('active');
         clearStatuses();
+        raisePanel.classList.remove('active');
         game.startNewHand();
     });
 
@@ -390,6 +447,14 @@ document.addEventListener('DOMContentLoaded', () => {
         game.rebuyHuman(1000);
         updateBankrollDisplay();
     });
+
+    // Sound toggle
+    if (btnSoundToggle) {
+        btnSoundToggle.addEventListener('click', () => {
+            sfx.enabled = !sfx.enabled;
+            btnSoundToggle.textContent = sfx.enabled ? '🔊' : '🔇';
+        });
+    }
 
     // Log Drawer Toggle
     btnToggleLog.addEventListener('click', () => {
@@ -443,9 +508,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const roundName = data.round || 'Round';
         if (data.player.isHuman) {
             if (data.currentBet === 0) {
-                dealerAnnouncement.textContent = `[${roundName}] It is your turn! You can Check or Bet.`;
+                dealerAnnouncement.textContent = `[${roundName}] Your turn! Check or Bet.`;
             } else {
-                dealerAnnouncement.textContent = `[${roundName}] It is your turn! Current bet is $${data.currentBet}.`;
+                dealerAnnouncement.textContent = `[${roundName}] Your turn! Current bet $${data.currentBet}.`;
             }
             updateHumanControls(true);
         } else {
@@ -469,7 +534,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     game.on('showdown', (data) => {
-        renderHoleCards(true); // Reveal cards of everyone
+        renderHoleCards(true);
         sfx.playWinSound();
         dealerAnnouncement.textContent = `Showdown! ${data.winningHand.name}`;
     });
@@ -479,6 +544,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateBankrollDisplay();
         updatePot(0);
         btnNewHand.disabled = false;
+        raisePanel.classList.remove('active');
 
         const winnerNames = data.winners ? data.winners.map(w => w.name).join(' & ') : 'Winner';
         const potAmount = data.potWon;
@@ -504,7 +570,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btnNewHand.disabled = true;
     });
 
-    // Initial table setup
+    // Initial setup
     updateDealerButton(0);
     renderCommunityCards([]);
     updateBankrollDisplay();
