@@ -229,6 +229,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function clearStatusesForNewRound() {
+        for (let i = 0; i < 4; i++) {
+            const player = game.players[i];
+            if (!player.folded) {
+                const statusTag = document.getElementById(`status-${i}`);
+                statusTag.style.display = 'none';
+            }
+        }
+    }
+
     function clearStatuses() {
         for (let i = 0; i < 4; i++) {
             const statusTag = document.getElementById(`status-${i}`);
@@ -261,15 +271,16 @@ document.addEventListener('DOMContentLoaded', () => {
             btnCheckCall.disabled = false;
         }
 
-        // Raise Setup
-        const minToRaise = game.currentBet + game.minRaise;
-        const canRaise = human.chips > callAmount;
+        // Bet or Raise setup
+        const isBet = game.currentBet === 0;
+        const minToWager = isBet ? game.bigBlind : (game.currentBet + game.minRaise);
+        const canWager = human.chips > callAmount;
 
-        if (canRaise) {
+        if (canWager) {
             raiseSlider.disabled = false;
             btnRaise.disabled = false;
 
-            const sliderMin = Math.min(minToRaise, human.chips + human.currentBet);
+            const sliderMin = Math.min(minToWager, human.chips + human.currentBet);
             const sliderMax = human.chips + human.currentBet;
 
             raiseSlider.min = sliderMin;
@@ -279,14 +290,17 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             raiseSlider.disabled = true;
             btnRaise.disabled = true;
-            btnRaise.textContent = 'Raise';
+            btnRaise.textContent = isBet ? 'Bet' : 'Raise';
         }
     }
 
     function updateRaiseButtonLabel(amount) {
         const human = game.players[0];
+        const isBet = game.currentBet === 0;
         if (amount >= human.chips + human.currentBet) {
             btnRaise.textContent = `All-In ($${human.chips + human.currentBet})`;
+        } else if (isBet) {
+            btnRaise.textContent = `Bet $${amount}`;
         } else {
             btnRaise.textContent = `Raise to $${amount}`;
         }
@@ -305,19 +319,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const preset = btn.dataset.preset;
             const currentTotal = human.chips + human.currentBet;
+            const isBet = game.currentBet === 0;
             let target = parseInt(raiseSlider.min);
 
             if (preset === 'min') {
                 target = parseInt(raiseSlider.min);
             } else if (preset === 'half-pot') {
-                target = Math.max(parseInt(raiseSlider.min), game.currentBet + Math.floor(game.pot * 0.5));
+                const add = Math.max(game.bigBlind, Math.floor(game.pot * 0.5));
+                target = isBet ? add : (game.currentBet + add);
             } else if (preset === 'pot') {
-                target = Math.max(parseInt(raiseSlider.min), game.currentBet + game.pot);
+                const add = Math.max(game.bigBlind, game.pot);
+                target = isBet ? add : (game.currentBet + add);
             } else if (preset === 'all-in') {
                 target = currentTotal;
             }
 
-            target = Math.min(target, currentTotal);
+            target = Math.max(parseInt(raiseSlider.min), Math.min(target, currentTotal));
             raiseSlider.value = target;
             updateRaiseButtonLabel(target);
         });
@@ -349,6 +366,8 @@ document.addEventListener('DOMContentLoaded', () => {
         sfx.playChipSound();
         if (targetTotal >= human.chips + human.currentBet) {
             game.executeAction(human, 'all-in');
+        } else if (game.currentBet === 0) {
+            game.executeAction(human, 'bet', amountToAdd);
         } else {
             game.executeAction(human, 'raise', amountToAdd);
         }
@@ -407,11 +426,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     game.on('communityCardsDealt', (data) => {
+        clearStatusesForNewRound();
         renderCommunityCards(data.cards);
         updatePot(game.pot);
         updateBets();
         updateHandStrength();
-        dealerAnnouncement.textContent = `${data.round} dealt.`;
+        dealerAnnouncement.textContent = `Dealing ${data.round}... Betting round begins!`;
     });
 
     game.on('turnChanged', (data) => {
@@ -420,11 +440,16 @@ document.addEventListener('DOMContentLoaded', () => {
         updatePot(data.pot);
         updateBets();
 
+        const roundName = data.round || 'Round';
         if (data.player.isHuman) {
-            dealerAnnouncement.textContent = `It is your turn! (Current bet: $${data.currentBet})`;
+            if (data.currentBet === 0) {
+                dealerAnnouncement.textContent = `[${roundName}] It is your turn! You can Check or Bet.`;
+            } else {
+                dealerAnnouncement.textContent = `[${roundName}] It is your turn! Current bet is $${data.currentBet}.`;
+            }
             updateHumanControls(true);
         } else {
-            dealerAnnouncement.textContent = `${data.player.name} is thinking...`;
+            dealerAnnouncement.textContent = `[${roundName}] ${data.player.name} is thinking...`;
             updateHumanControls(false);
         }
     });

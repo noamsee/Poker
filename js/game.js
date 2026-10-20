@@ -1,5 +1,7 @@
 /**
  * Texas Hold'em Game State Controller
+ * Fully compliant with official Texas Hold'em rules & betting rounds:
+ * Pre-Flop -> Flop -> Turn -> River -> Showdown
  */
 
 class PokerGame {
@@ -14,14 +16,13 @@ class PokerGame {
         this.dealerIndex = 0;
         this.activePlayerIndex = -1;
         this.currentRound = 'IDLE'; // 'PREFLOP', 'FLOP', 'TURN', 'RIVER', 'SHOWDOWN'
-        this.lastRaiserIndex = -1;
         this.handInProgress = false;
 
         this.players = [
-            { id: 0, name: 'You', isHuman: true, chips: 1000, holeCards: [], currentBet: 0, folded: false, allIn: false, avatar: '👤' },
-            { id: 1, name: 'Alex', isHuman: false, personality: 'aggressive', chips: 1000, holeCards: [], currentBet: 0, folded: false, allIn: false, avatar: '🦊' },
-            { id: 2, name: 'Claire', isHuman: false, personality: 'conservative', chips: 1000, holeCards: [], currentBet: 0, folded: false, allIn: false, avatar: '🦉' },
-            { id: 3, name: 'Tom', isHuman: false, personality: 'balanced', chips: 1000, holeCards: [], currentBet: 0, folded: false, allIn: false, avatar: '🐺' }
+            { id: 0, name: 'You', isHuman: true, chips: 1000, holeCards: [], currentBet: 0, hasActed: false, folded: false, allIn: false, avatar: '👤' },
+            { id: 1, name: 'Alex', isHuman: false, personality: 'aggressive', chips: 1000, holeCards: [], currentBet: 0, hasActed: false, folded: false, allIn: false, avatar: '🦊' },
+            { id: 2, name: 'Claire', isHuman: false, personality: 'conservative', chips: 1000, holeCards: [], currentBet: 0, hasActed: false, folded: false, allIn: false, avatar: '🦉' },
+            { id: 3, name: 'Tom', isHuman: false, personality: 'balanced', chips: 1000, holeCards: [], currentBet: 0, hasActed: false, folded: false, allIn: false, avatar: '🐺' }
         ];
 
         this.history = [];
@@ -46,14 +47,12 @@ class PokerGame {
     }
 
     startNewHand() {
-        // Filter out players with 0 chips
         const activePlayers = this.players.filter(p => p.chips > 0);
         if (activePlayers.length < 2) {
             this.log('Not enough players with chips to start a hand!', 'alert');
             return;
         }
 
-        // Check if human has busted
         if (this.players[0].chips <= 0) {
             this.emit('playerBusted');
             return;
@@ -66,15 +65,16 @@ class PokerGame {
         this.currentBet = 0;
         this.currentRound = 'PREFLOP';
 
-        // Reset player hand states
+        // Reset player states for new hand
         this.players.forEach(p => {
             p.holeCards = [];
             p.currentBet = 0;
+            p.hasActed = false;
             p.folded = p.chips <= 0;
             p.allIn = false;
         });
 
-        // Rotate dealer button
+        // Rotate dealer button to next player with chips
         do {
             this.dealerIndex = (this.dealerIndex + 1) % this.players.length;
         } while (this.players[this.dealerIndex].chips <= 0);
@@ -96,11 +96,10 @@ class PokerGame {
         this.emit('handStarted');
         this.emit('cardsDealt');
 
-        // Preflop action begins left of Big Blind
-        const bbIndex = this.getNextActiveIndex((this.dealerIndex + 1) % this.players.length);
-        const firstToAct = this.getNextActiveIndex(bbIndex);
-        this.activePlayerIndex = firstToAct;
-        this.lastRaiserIndex = bbIndex; // action closes when reaches BB if no raise
+        // Preflop action begins left of Big Blind (Under The Gun)
+        const sbIndex = this.getNextActiveIndex(this.dealerIndex);
+        const bbIndex = this.getNextActiveIndex(sbIndex);
+        this.activePlayerIndex = this.getNextActiveIndex(bbIndex);
 
         this.processCurrentTurn();
     }
@@ -142,76 +141,7 @@ class PokerGame {
         return index;
     }
 
-    getActivePlayersCount() {
-        return this.players.filter(p => !p.folded && p.chips > 0).length;
-    }
-
-    getRemainingPlayers() {
-        return this.players.filter(p => !p.folded);
-    }
-
-    processCurrentTurn() {
-        // Check if only one player remaining (everyone else folded)
-        const remaining = this.getRemainingPlayers();
-        if (remaining.length === 1) {
-            this.handleLastPlayerStanding(remaining[0]);
-            return;
-        }
-
-        // Check if round should advance
-        if (this.isBettingRoundComplete()) {
-            this.advanceToNextRound();
-            return;
-        }
-
-        const activePlayer = this.players[this.activePlayerIndex];
-
-        // Skip players who are all-in or folded
-        if (activePlayer.folded || activePlayer.allIn) {
-            this.activePlayerIndex = this.getNextActivePlayerToAct(this.activePlayerIndex);
-            this.processCurrentTurn();
-            return;
-        }
-
-        this.emit('turnChanged', {
-            player: activePlayer,
-            currentBet: this.currentBet,
-            minRaise: this.minRaise,
-            pot: this.pot
-        });
-
-        if (!activePlayer.isHuman) {
-            // Trigger AI action after a slight natural delay
-            setTimeout(() => {
-                if (!this.handInProgress) return;
-                const decision = PokerAI.decide(activePlayer, {
-                    currentBet: this.currentBet,
-                    minRaise: this.minRaise,
-                    pot: this.pot,
-                    communityCards: this.communityCards,
-                    bigBlind: this.bigBlind
-                });
-                this.executeAction(activePlayer, decision.action, decision.amount);
-            }, 800 + Math.random() * 600);
-        }
-    }
-
-    isBettingRoundComplete() {
-        const canActPlayers = this.players.filter(p => !p.folded && !p.allIn && p.chips > 0);
-        if (canActPlayers.length <= 1 && this.players.filter(p => !p.folded).some(p => p.allIn)) {
-            // Everyone remaining is either all-in or only one player with chips left
-            const highestBet = Math.max(...this.players.map(p => p.currentBet));
-            return canActPlayers.every(p => p.currentBet === highestBet || p.chips === 0);
-        }
-
-        // Everyone who hasn't folded must have matched current bet or is all-in
-        const activeUnfolded = this.players.filter(p => !p.folded);
-        const allBetsMatched = activeUnfolded.every(p => p.currentBet === this.currentBet || p.allIn);
-
-        return allBetsMatched && this.activePlayerIndex === this.lastRaiserIndex;
-    }
-
-    getNextActivePlayerToAct(fromIndex) {
+    getNextPlayerToAct(fromIndex) {
         let next = (fromIndex + 1) % this.players.length;
         let checks = 0;
         while (checks < this.players.length) {
@@ -225,8 +155,91 @@ class PokerGame {
         return next;
     }
 
+    getRemainingPlayers() {
+        return this.players.filter(p => !p.folded);
+    }
+
+    getCanActPlayers() {
+        return this.players.filter(p => !p.folded && !p.allIn && p.chips > 0);
+    }
+
+    isBettingRoundComplete() {
+        const remaining = this.getRemainingPlayers();
+        if (remaining.length <= 1) return true;
+
+        const canAct = this.getCanActPlayers();
+
+        // If no one can act anymore (all in), round is complete
+        if (canAct.length === 0) {
+            return true;
+        }
+
+        // If only 1 player can act and all others are all-in, verify bet matched
+        if (canAct.length === 1 && this.players.filter(p => !p.folded && p.allIn).length > 0) {
+            const highestBet = Math.max(...this.players.map(p => p.currentBet));
+            return canAct[0].currentBet === highestBet || canAct[0].hasActed;
+        }
+
+        // Standard: Every player who can act MUST have acted at least once this round
+        const allActed = canAct.every(p => p.hasActed);
+
+        // AND every active player must have matched the current bet (or be all-in)
+        const allBetsMatched = remaining.every(p => p.currentBet === this.currentBet || p.allIn);
+
+        return allActed && allBetsMatched;
+    }
+
+    processCurrentTurn() {
+        // 1. Check if all but one folded
+        const remaining = this.getRemainingPlayers();
+        if (remaining.length === 1) {
+            this.handleLastPlayerStanding(remaining[0]);
+            return;
+        }
+
+        // 2. Check if betting round is complete
+        if (this.isBettingRoundComplete()) {
+            this.advanceToNextRound();
+            return;
+        }
+
+        // 3. Current active player
+        const activePlayer = this.players[this.activePlayerIndex];
+
+        // Skip if folded or all-in
+        if (activePlayer.folded || activePlayer.allIn) {
+            this.activePlayerIndex = this.getNextPlayerToAct(this.activePlayerIndex);
+            this.processCurrentTurn();
+            return;
+        }
+
+        this.emit('turnChanged', {
+            player: activePlayer,
+            currentBet: this.currentBet,
+            minRaise: this.minRaise,
+            pot: this.pot,
+            round: this.currentRound
+        });
+
+        if (!activePlayer.isHuman) {
+            // Natural thinking delay for AI
+            setTimeout(() => {
+                if (!this.handInProgress) return;
+                const decision = PokerAI.decide(activePlayer, {
+                    currentBet: this.currentBet,
+                    minRaise: this.minRaise,
+                    pot: this.pot,
+                    communityCards: this.communityCards,
+                    bigBlind: this.bigBlind
+                });
+                this.executeAction(activePlayer, decision.action, decision.amount);
+            }, 800 + Math.random() * 500);
+        }
+    }
+
     executeAction(player, action, amount = 0) {
         const toCall = this.currentBet - player.currentBet;
+        player.hasActed = true;
 
         switch (action) {
             case 'fold':
@@ -258,10 +271,17 @@ class PokerGame {
                 const raiseOverCurrent = player.currentBet - this.currentBet;
                 this.minRaise = Math.max(this.bigBlind, raiseOverCurrent);
                 this.currentBet = player.currentBet;
-                this.lastRaiserIndex = player.id;
+
+                // When someone bets or raises, all other active players must respond again!
+                this.players.forEach(p => {
+                    if (p.id !== player.id && !p.folded && !p.allIn) {
+                        p.hasActed = false;
+                    }
+                });
 
                 if (player.chips === 0) player.allIn = true;
-                this.log(`${player.name} ${action}s to $${player.currentBet}`, 'raise');
+                const actionLabel = this.currentRound !== 'PREFLOP' && toCall === 0 ? 'bets' : 'raises to';
+                this.log(`${player.name} ${actionLabel} $${player.currentBet}`, 'raise');
                 break;
             }
 
@@ -276,7 +296,13 @@ class PokerGame {
                     const raiseOverCurrent = player.currentBet - this.currentBet;
                     this.minRaise = Math.max(this.bigBlind, raiseOverCurrent);
                     this.currentBet = player.currentBet;
-                    this.lastRaiserIndex = player.id;
+
+                    // Require everyone else to act on the all-in raise
+                    this.players.forEach(p => {
+                        if (p.id !== player.id && !p.folded && !p.allIn) {
+                            p.hasActed = false;
+                        }
+                    });
                 }
                 this.log(`${player.name} goes ALL-IN for $${allInAmount}!`, 'allin');
                 break;
@@ -285,52 +311,64 @@ class PokerGame {
 
         this.emit('playerActed', { player, action, amount });
 
-        // Advance turn
-        this.activePlayerIndex = this.getNextActivePlayerToAct(player.id);
+        // Advance to next active player
+        this.activePlayerIndex = this.getNextPlayerToAct(player.id);
         this.processCurrentTurn();
     }
 
     advanceToNextRound() {
-        // Reset player round bets
-        this.players.forEach(p => { p.currentBet = 0; });
+        // Collect bets into the pot and reset current round bets
+        this.players.forEach(p => {
+            p.currentBet = 0;
+            p.hasActed = false;
+        });
         this.currentBet = 0;
         this.minRaise = this.bigBlind;
 
-        // Reset first to act postflop (first active player after dealer)
-        this.activePlayerIndex = this.getNextActivePlayerToAct(this.dealerIndex);
-        this.lastRaiserIndex = this.activePlayerIndex;
+        // Postflop action starts with first active player seated to the left of the dealer button
+        this.activePlayerIndex = this.getNextPlayerToAct(this.dealerIndex);
 
-        // Check if players can still bet, or if all are all-in
-        const playersCanAct = this.players.filter(p => !p.folded && !p.allIn && p.chips > 0).length;
+        const canActPlayers = this.getCanActPlayers();
+        const allInRemaining = this.players.filter(p => !p.folded && p.allIn).length;
 
         if (this.currentRound === 'PREFLOP') {
             this.currentRound = 'FLOP';
             this.deck.deal(); // Burn card
-            this.communityCards.push(this.deck.deal(), this.deck.deal(), this.deck.deal());
-            this.log('Dealing Flop: 3 community cards', 'round');
+            const c1 = this.deck.deal();
+            const c2 = this.deck.deal();
+            const c3 = this.deck.deal();
+            this.communityCards.push(c1, c2, c3);
+            this.log('--- Flop Dealt (3 cards) ---', 'round');
             this.emit('communityCardsDealt', { round: 'FLOP', cards: this.communityCards });
         } else if (this.currentRound === 'FLOP') {
             this.currentRound = 'TURN';
             this.deck.deal(); // Burn card
-            this.communityCards.push(this.deck.deal());
-            this.log('Dealing Turn: 4th community card', 'round');
+            const c4 = this.deck.deal();
+            this.communityCards.push(c4);
+            this.log('--- Turn Dealt (4th card) ---', 'round');
             this.emit('communityCardsDealt', { round: 'TURN', cards: this.communityCards });
         } else if (this.currentRound === 'TURN') {
             this.currentRound = 'RIVER';
             this.deck.deal(); // Burn card
-            this.communityCards.push(this.deck.deal());
-            this.log('Dealing River: Final community card', 'round');
+            const c5 = this.deck.deal();
+            this.communityCards.push(c5);
+            this.log('--- River Dealt (5th card) ---', 'round');
             this.emit('communityCardsDealt', { round: 'RIVER', cards: this.communityCards });
         } else if (this.currentRound === 'RIVER') {
             this.showdown();
             return;
         }
 
-        if (playersCanAct <= 1) {
-            // Auto-advance rest of the board if players can't bet
-            setTimeout(() => this.advanceToNextRound(), 1200);
+        // If players can't bet because they are all-in, run out board with suspenseful delays
+        if (canActPlayers.length <= 1 && allInRemaining > 0) {
+            setTimeout(() => {
+                if (this.handInProgress) this.advanceToNextRound();
+            }, 1400);
         } else {
-            this.processCurrentTurn();
+            // Give players a brief moment to see the new card before prompting the first bet
+            setTimeout(() => {
+                if (this.handInProgress) this.processCurrentTurn();
+            }, 600);
         }
     }
 
@@ -338,7 +376,7 @@ class PokerGame {
         winner.chips += this.pot;
         this.log(`Everyone folded. ${winner.name} wins the pot ($${this.pot})!`, 'win');
         this.emit('handComplete', {
-            winner: [winner],
+            winners: [winner],
             potWon: this.pot,
             reason: 'All opponents folded'
         });
@@ -359,7 +397,7 @@ class PokerGame {
         // Sort descending by score
         evaluations.sort((a, b) => compareScores(b.hand.score, a.hand.score));
 
-        // Detect winners (may be multiple in case of split pot)
+        // Detect winners (split pot in case of exact tie)
         const bestScore = evaluations[0].hand.score;
         const winners = evaluations.filter(e => compareScores(e.hand.score, bestScore) === 0);
 
