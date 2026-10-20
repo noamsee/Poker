@@ -2,8 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0d14">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Poker">
     <title>Poker - Texas Hold'em</title>
+    <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -15,13 +20,13 @@
         </div>
         <div class="header-stats">
             <div class="stat-item">Blinds: <span id="header-blinds">$10 / $20</span></div>
-            <div class="stat-item">Hands Played: <span id="header-hands">0</span></div>
-            <div class="stat-item">Your Bankroll: <span id="header-bankroll">$1,000</span></div>
+            <div class="stat-item">Hands: <span id="header-hands">0</span></div>
+            <div class="stat-item">Bankroll: <span id="header-bankroll">$1,000</span></div>
         </div>
         <div class="header-actions">
-            <button id="btn-toggle-log" class="btn-header">📜 History</button>
-            <button id="btn-rebuy" class="btn-header">💰 Re-buy ($1000)</button>
-            <button id="btn-new-hand" class="btn-header" style="background: var(--gold); color: #000; font-weight: bold;">Deal Next Hand</button>
+            <button id="btn-toggle-log" class="btn-header">📜 Log</button>
+            <button id="btn-rebuy" class="btn-header">💰 Re-buy</button>
+            <button id="btn-new-hand" class="btn-header btn-deal-hand">Deal Hand</button>
         </div>
     </header>
 
@@ -80,7 +85,7 @@
                     </div>
 
                     <div class="dealer-announcement" id="dealer-announcement">
-                        Click "Deal Next Hand" to begin!
+                        Click "Deal Hand" to begin!
                     </div>
                 </div>
 

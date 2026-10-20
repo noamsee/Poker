@@ -823,3 +823,184 @@ body {
     background: #d97706;
     transform: scale(1.03);
 }
+
+/* =================================================== */
+/* MOBILE & PHONE RESPONSIVE STYLING                  */
+/* =================================================== */
+@media (max-width: 768px) {
+    .game-header {
+        padding: 8px 12px;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .logo {
+        font-size: 1.05rem;
+    }
+
+    .header-stats {
+        gap: 10px;
+        font-size: 0.78rem;
+    }
+
+    .header-actions {
+        gap: 6px;
+    }
+
+    .btn-header {
+        padding: 4px 8px;
+        font-size: 0.75rem;
+    }
+
+    .btn-deal-hand {
+        background: var(--gold);
+        color: #000;
+        font-weight: 800;
+    }
+
+    .table-container {
+        padding: 4px;
+    }
+
+    .poker-table {
+        width: 98%;
+        height: min(58vh, 440px);
+        min-height: 370px;
+        border-width: 10px;
+        border-radius: 170px;
+    }
+
+    .poker-card {
+        width: 52px;
+        height: 76px;
+    }
+
+    .card-rank {
+        font-size: 0.85rem;
+    }
+
+    .card-corner-suit {
+        width: 9px;
+        height: 9px;
+    }
+
+    .pip {
+        width: 10px;
+        height: 10px;
+    }
+
+    .community-card-slot {
+        width: 52px;
+        height: 76px;
+    }
+
+    .community-cards-container {
+        gap: 5px;
+        min-height: 78px;
+    }
+
+    .large-suit-pip {
+        width: 24px;
+        height: 24px;
+    }
+
+    .ornate-spade-svg {
+        width: 32px;
+        height: 36px;
+    }
+
+    .seat {
+        width: 110px;
+    }
+
+    .seat-top {
+        top: -16px;
+    }
+
+    .seat-bottom {
+        bottom: -18px;
+    }
+
+    .seat-left {
+        left: 4px;
+    }
+
+    .seat-right {
+        right: 4px;
+    }
+
+    .player-avatar {
+        font-size: 1.2rem;
+    }
+
+    .player-name {
+        font-size: 0.72rem;
+    }
+
+    .player-chips {
+        font-size: 0.68rem;
+    }
+
+    .pot-display {
+        font-size: 0.92rem;
+        padding: 4px 12px;
+    }
+
+    .dealer-announcement {
+        font-size: 0.75rem;
+        padding: 4px 10px;
+        max-width: 260px;
+    }
+
+    .action-bar {
+        padding: 8px 12px env(safe-area-inset-bottom, 10px);
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .hand-strength-preview {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        min-width: unset;
+    }
+
+    .action-buttons-group {
+        width: 100%;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .action-btn {
+        flex: 1;
+        min-width: 75px;
+        padding: 9px 8px;
+        font-size: 0.82rem;
+    }
+
+    .raise-controls {
+        width: 100%;
+    }
+
+    .raise-presets {
+        justify-content: space-between;
+    }
+
+    .btn-preset {
+        flex: 1;
+        text-align: center;
+        padding: 4px 2px;
+        font-size: 0.7rem;
+    }
+
+    .raise-inputs {
+        width: 100%;
+    }
+
+    .raise-slider {
+        flex: 1;
+    }
+}
+

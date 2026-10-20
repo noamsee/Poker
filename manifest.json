@@ -1,0 +1,16 @@
+{
+  "name": "Royal Texas Hold'em",
+  "short_name": "Poker",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0a0d14",
+  "theme_color": "#0a0d14",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23123820'/><text x='50' y='68' font-size='55' text-anchor='middle' fill='%23f59e0b'>♠</text></svg>",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
