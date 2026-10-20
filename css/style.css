@@ -1,18 +1,14 @@
 :root {
-    --bg-dark: #0d1117;
-    --table-green: #1a472a;
-    --table-felt: radial-gradient(circle at 50% 50%, #205c35 0%, #164024 70%, #0d2816 100%);
-    --wood-rim: linear-gradient(135deg, #422513 0%, #683b19 50%, #29160a 100%);
-    --gold: #f4c430;
-    --gold-glow: rgba(244, 196, 48, 0.4);
-    --gold-border: #b8860b;
-    --red-card: #e53e3e;
-    --black-card: #1a202c;
-    --accent-blue: #3182ce;
-    --accent-green: #38a169;
-    --accent-red: #e53e3e;
-    --text-light: #f7fafc;
-    --text-muted: #a0aec0;
+    --bg-dark: #0a0d14;
+    --table-felt: radial-gradient(circle at 50% 50%, #1c5230 0%, #123820 65%, #0a2012 100%);
+    --wood-rim: linear-gradient(135deg, #3d2110 0%, #5e3415 50%, #201006 100%);
+    --gold: #f59e0b;
+    --gold-glow: rgba(245, 158, 11, 0.45);
+    --gold-border: #d97706;
+    --card-red: #c51624;
+    --card-black: #15181e;
+    --text-light: #f8fafc;
+    --text-muted: #94a3b8;
 }
 
 * {
@@ -37,9 +33,9 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 24px;
-    background: rgba(13, 17, 23, 0.95);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px 24px;
+    background: rgba(10, 13, 20, 0.98);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     z-index: 10;
 }
 
@@ -47,15 +43,15 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 1.3rem;
-    font-weight: 700;
+    font-size: 1.25rem;
+    font-weight: 800;
     color: var(--gold);
     letter-spacing: 1px;
 }
 
 .header-stats {
     display: flex;
-    gap: 20px;
+    gap: 24px;
 }
 
 .stat-item {
@@ -74,8 +70,8 @@ body {
 }
 
 .btn-header {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     color: var(--text-light);
     padding: 6px 14px;
     border-radius: 6px;
@@ -85,7 +81,7 @@ body {
 }
 
 .btn-header:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.18);
     border-color: var(--gold);
 }
 
@@ -97,26 +93,26 @@ body {
     overflow: hidden;
 }
 
-/* Poker Table */
+/* Table Container */
 .table-container {
     flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
-    padding: 20px;
+    padding: 15px;
 }
 
 .poker-table {
-    width: 90%;
-    max-width: 980px;
-    height: 520px;
+    width: 92%;
+    max-width: 1020px;
+    height: 530px;
     background: var(--table-felt);
-    border-radius: 260px;
-    border: 16px solid #4a2810;
+    border-radius: 265px;
+    border: 18px solid #3d2110;
     box-shadow: 
-        inset 0 0 50px rgba(0, 0, 0, 0.7),
-        0 15px 40px rgba(0, 0, 0, 0.9),
+        inset 0 0 60px rgba(0, 0, 0, 0.85),
+        0 20px 50px rgba(0, 0, 0, 0.9),
         0 0 0 4px var(--gold-border);
     position: relative;
     display: flex;
@@ -126,14 +122,14 @@ body {
 
 .table-felt-inner-line {
     position: absolute;
-    width: calc(100% - 60px);
-    height: calc(100% - 60px);
+    width: calc(100% - 70px);
+    height: calc(100% - 70px);
     border-radius: 230px;
-    border: 2px dashed rgba(244, 196, 48, 0.25);
+    border: 2px dashed rgba(245, 158, 11, 0.2);
     pointer-events: none;
 }
 
-/* Center Table: Community & Pot */
+/* Table Center */
 .table-center {
     display: flex;
     flex-direction: column;
@@ -143,35 +139,32 @@ body {
 }
 
 .pot-display {
-    background: rgba(0, 0, 0, 0.6);
-    border: 1px solid var(--gold);
-    padding: 6px 20px;
+    background: rgba(0, 0, 0, 0.65);
+    border: 1.5px solid var(--gold);
+    padding: 6px 22px;
     border-radius: 20px;
     font-size: 1.15rem;
-    font-weight: bold;
+    font-weight: 800;
     color: var(--gold);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
     display: flex;
     align-items: center;
     gap: 8px;
-}
-
-.pot-chips {
-    font-size: 1.3rem;
+    letter-spacing: 0.5px;
 }
 
 .community-cards-container {
     display: flex;
     gap: 10px;
-    min-height: 100px;
+    min-height: 108px;
     align-items: center;
     justify-content: center;
 }
 
 .community-card-slot {
-    width: 68px;
-    height: 96px;
-    border: 2px dashed rgba(255, 255, 255, 0.2);
+    width: 72px;
+    height: 104px;
+    border: 2px dashed rgba(255, 255, 255, 0.18);
     border-radius: 8px;
     display: flex;
     align-items: center;
@@ -179,31 +172,31 @@ body {
 }
 
 .dealer-announcement {
-    background: rgba(0, 0, 0, 0.75);
-    padding: 6px 16px;
+    background: rgba(10, 13, 20, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 6px 18px;
     border-radius: 12px;
     font-size: 0.9rem;
     color: #e2e8f0;
     text-align: center;
-    max-width: 400px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    min-height: 28px;
+    max-width: 440px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+    min-height: 30px;
 }
 
-/* Player Seats */
+/* Seats */
 .seat {
     position: absolute;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
-    width: 150px;
+    gap: 8px;
+    width: 155px;
     transition: all 0.3s;
 }
 
-/* Seat Positions */
 .seat-top {
-    top: -25px;
+    top: -20px;
     left: 50%;
     transform: translateX(-50%);
 }
@@ -221,28 +214,27 @@ body {
 }
 
 .seat-bottom {
-    bottom: -30px;
+    bottom: -25px;
     left: 50%;
     transform: translateX(-50%);
 }
 
-/* Player Avatar & Info */
 .player-badge {
-    background: rgba(20, 24, 33, 0.9);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border-radius: 14px;
+    background: rgba(15, 23, 42, 0.92);
+    border: 1.5px solid rgba(255, 255, 255, 0.18);
+    border-radius: 12px;
     padding: 6px 12px;
     display: flex;
     align-items: center;
     gap: 8px;
     width: 100%;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
     position: relative;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition: all 0.2s;
 }
 
 .player-avatar {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
     line-height: 1;
 }
 
@@ -263,32 +255,31 @@ body {
 .player-chips {
     font-size: 0.8rem;
     color: var(--gold);
-    font-weight: bold;
+    font-weight: 800;
 }
 
 .player-status-tag {
     position: absolute;
-    top: -10px;
+    top: -9px;
     right: 6px;
     font-size: 0.65rem;
-    font-weight: bold;
+    font-weight: 800;
     text-transform: uppercase;
     padding: 2px 6px;
     border-radius: 4px;
-    background: #4a5568;
+    background: #475569;
     color: white;
 }
 
-.status-folded { background: #e53e3e !important; }
-.status-allin { background: #dd6b20 !important; }
-.status-call { background: #3182ce !important; }
-.status-raise { background: #38a169 !important; }
+.status-folded { background: #dc2626 !important; }
+.status-allin { background: #ea580c !important; }
+.status-call { background: #2563eb !important; }
+.status-raise { background: #16a34a !important; }
 
-/* Active Turn Pulse */
 .seat.active-turn .player-badge {
     border-color: var(--gold);
     box-shadow: 0 0 20px var(--gold-glow);
-    animation: turn-pulse 1.5s infinite;
+    animation: turn-pulse 1.4s infinite;
 }
 
 @keyframes turn-pulse {
@@ -298,114 +289,276 @@ body {
 }
 
 .seat.folded {
-    opacity: 0.45;
-    filter: grayscale(80%);
+    opacity: 0.4;
+    filter: grayscale(85%);
 }
 
-/* Hole Cards */
 .hole-cards {
     display: flex;
     gap: 6px;
     position: relative;
 }
 
-/* Card Styling */
+/* =================================================== */
+/* DECENT CASINO DECK OF CARDS STYLING                */
+/* =================================================== */
+
 .poker-card {
-    width: 68px;
-    height: 96px;
-    border-radius: 8px;
-    background: #ffffff;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(0, 0, 0, 0.15);
+    width: 72px;
+    height: 104px;
+    border-radius: 7px;
     position: relative;
     perspective: 1000px;
-    animation: card-appear 0.3s ease-out;
-}
-
-@keyframes card-appear {
-    0% { transform: translateY(-20px) scale(0.8); opacity: 0; }
-    100% { transform: translateY(0) scale(1); opacity: 1; }
-}
-
-.poker-card.face-down {
-    background: #1a365d;
-    border: 2px solid #ffffff;
-}
-
-.card-back {
-    width: 100%;
-    height: 100%;
-    border-radius: 6px;
-    background: repeating-linear-gradient(
-        45deg,
-        #1e3a8a,
-        #1e3a8a 5px,
-        #172554 5px,
-        #172554 10px
-    );
-    border: 2px solid #93c5fd;
+    box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.4),
+        0 1px 3px rgba(0, 0, 0, 0.25);
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s;
+    background: #fdfdfd;
     box-sizing: border-box;
 }
 
+.poker-card:hover {
+    transform: translateY(-4px) scale(1.04);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+    z-index: 10;
+}
+
+.card-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 7px;
+    overflow: hidden;
+}
+
+/* FRONT FACE */
 .card-front {
     width: 100%;
     height: 100%;
+    background: linear-gradient(135deg, #ffffff 0%, #fafafa 60%, #f4f4f5 100%);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 7px;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 6px;
+    padding: 4px 5px;
     position: relative;
-    box-sizing: border-box;
 }
 
-.poker-card.red { color: var(--red-card); }
-.poker-card.black { color: var(--black-card); }
+/* COLOR SCHEMES */
+.poker-card.red {
+    color: var(--card-red);
+}
 
+.poker-card.black {
+    color: var(--card-black);
+}
+
+/* CORNER INDICES */
 .card-corner {
     display: flex;
     flex-direction: column;
     align-items: center;
     line-height: 1;
+    width: 14px;
+    z-index: 3;
 }
 
 .card-corner.bottom-right {
+    align-self: flex-end;
     transform: rotate(180deg);
 }
 
 .card-rank {
+    font-family: 'Georgia', 'Times New Roman', serif;
     font-size: 1.05rem;
     font-weight: 900;
+    letter-spacing: -0.5px;
 }
 
-.card-suit {
-    font-size: 0.95rem;
+.card-corner-suit {
+    width: 11px;
+    height: 11px;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.card-center {
+.card-corner-suit svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* CENTER BODY */
+.card-body {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 1.9rem;
-    opacity: 0.9;
+    top: 6px;
+    bottom: 6px;
+    left: 16px;
+    right: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
 }
 
-/* Card highlight for showdown winning cards */
+/* PIPS MATRIX GRID (2 to 10) */
+.pips-matrix {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pip-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    height: 100%;
+    align-items: center;
+    flex: 1;
+}
+
+.pip {
+    width: 13px;
+    height: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pip.inverted {
+    transform: rotate(180deg);
+}
+
+.pip svg, .suit-icon {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.08));
+}
+
+/* ACE OF SPADES & ACES */
+.ace-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.large-suit-pip {
+    width: 34px;
+    height: 34px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+}
+
+.ornate-spade {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.ornate-spade-svg {
+    width: 44px;
+    height: 48px;
+    filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.3));
+}
+
+.ace-badge {
+    font-size: 0.55rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    color: #92400e;
+    margin-top: 1px;
+    font-family: 'Georgia', serif;
+}
+
+/* COURT CARDS (J, Q, K) */
+.court-art {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.court-svg {
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+    background: #fafaf9;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1);
+}
+
+/* BACK OF CARDS (Ornate Casino Deck Back) */
+.card-back {
+    width: 100%;
+    height: 100%;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    border-radius: 7px;
+    padding: 4px;
+    box-sizing: border-box;
+}
+
+.back-inner-frame {
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 50% 50%, #1e3a8a 0%, #172554 100%);
+    border-radius: 4px;
+    border: 1.5px solid #d97706;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.back-filigree-pattern {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: 
+        repeating-linear-gradient(45deg, rgba(217, 119, 6, 0.2) 0, rgba(217, 119, 6, 0.2) 2px, transparent 2px, transparent 8px),
+        repeating-linear-gradient(-45deg, rgba(217, 119, 6, 0.2) 0, rgba(217, 119, 6, 0.2) 2px, transparent 2px, transparent 8px);
+    opacity: 0.8;
+}
+
+.back-seal {
+    position: relative;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #0f172a;
+    border: 1.5px solid #d97706;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #d97706;
+    font-size: 0.95rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+    z-index: 2;
+}
+
+/* Winning Card Glow */
 .poker-card.winning-card {
-    border: 2px solid var(--gold);
-    box-shadow: 0 0 15px var(--gold);
-    transform: translateY(-8px);
+    border: 2px solid var(--gold) !important;
+    box-shadow: 0 0 20px var(--gold) !important;
+    transform: translateY(-8px) scale(1.05) !important;
 }
 
-/* Bet Chips In Front */
+/* Chips In Front */
 .bet-chips {
     position: absolute;
-    background: rgba(0, 0, 0, 0.7);
-    border: 1px solid var(--gold);
+    background: rgba(0, 0, 0, 0.75);
+    border: 1.5px solid var(--gold);
     border-radius: 12px;
     padding: 2px 8px;
     font-size: 0.75rem;
     color: var(--gold);
-    font-weight: bold;
+    font-weight: 800;
     display: flex;
     align-items: center;
     gap: 4px;
@@ -419,8 +572,8 @@ body {
 /* Dealer Button */
 .dealer-button {
     position: absolute;
-    width: 28px;
-    height: 28px;
+    width: 30px;
+    height: 30px;
     background: #ffffff;
     color: #000000;
     border-radius: 50%;
@@ -428,17 +581,17 @@ body {
     align-items: center;
     justify-content: center;
     font-weight: 900;
-    font-size: 0.85rem;
-    border: 2px solid #000;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+    font-size: 0.9rem;
+    border: 2.5px solid #000;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.7);
     z-index: 5;
     transition: all 0.4s ease-in-out;
 }
 
-/* Action Bar (Controls for Human) */
+/* Action Bar */
 .action-bar {
-    background: rgba(15, 20, 28, 0.98);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(10, 13, 20, 0.98);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
     padding: 14px 24px;
     display: flex;
     justify-content: space-between;
@@ -461,8 +614,8 @@ body {
 }
 
 .hand-strength-value {
-    font-size: 1rem;
-    font-weight: 700;
+    font-size: 1.05rem;
+    font-weight: 800;
     color: var(--gold);
 }
 
@@ -476,7 +629,7 @@ body {
     padding: 12px 24px;
     border-radius: 8px;
     font-size: 1rem;
-    font-weight: 700;
+    font-weight: 800;
     border: none;
     cursor: pointer;
     transition: all 0.2s;
@@ -490,20 +643,20 @@ body {
 }
 
 .btn-fold {
-    background: #e53e3e;
+    background: #dc2626;
     color: white;
 }
 .btn-fold:not(:disabled):hover {
-    background: #c53030;
+    background: #b91c1c;
     transform: translateY(-2px);
 }
 
 .btn-check-call {
-    background: #3182ce;
+    background: #2563eb;
     color: white;
 }
 .btn-check-call:not(:disabled):hover {
-    background: #2b6cb0;
+    background: #1d4ed8;
     transform: translateY(-2px);
 }
 
@@ -519,8 +672,8 @@ body {
 }
 
 .btn-preset {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     color: #e2e8f0;
     padding: 3px 8px;
     font-size: 0.75rem;
@@ -545,19 +698,19 @@ body {
 }
 
 .btn-raise {
-    background: #38a169;
+    background: #16a34a;
     color: white;
 }
 .btn-raise:not(:disabled):hover {
-    background: #2f855a;
+    background: #15803d;
     transform: translateY(-2px);
 }
 
-/* History Drawer / Log Sidebar */
+/* History Drawer */
 .history-drawer {
-    width: 280px;
-    background: rgba(13, 17, 23, 0.95);
-    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    width: 290px;
+    background: rgba(10, 13, 20, 0.98);
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -570,11 +723,11 @@ body {
 
 .drawer-header {
     padding: 12px 16px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-weight: 700;
+    font-weight: 800;
     font-size: 0.95rem;
 }
 
@@ -589,19 +742,19 @@ body {
 }
 
 .log-entry {
-    padding: 6px 8px;
+    padding: 6px 10px;
     border-radius: 6px;
     background: rgba(255, 255, 255, 0.04);
-    border-left: 3px solid #718096;
+    border-left: 3px solid #64748b;
     line-height: 1.4;
 }
 
 .log-entry.header { border-left-color: var(--gold); font-weight: bold; color: var(--gold); }
-.log-entry.win { border-left-color: #38a169; background: rgba(56, 161, 105, 0.15); font-weight: bold; }
-.log-entry.raise { border-left-color: #ecc94b; }
-.log-entry.call { border-left-color: #3182ce; }
-.log-entry.fold { border-left-color: #e53e3e; opacity: 0.7; }
-.log-entry.allin { border-left-color: #dd6b20; font-weight: bold; }
+.log-entry.win { border-left-color: #16a34a; background: rgba(22, 163, 74, 0.15); font-weight: bold; }
+.log-entry.raise { border-left-color: #f59e0b; }
+.log-entry.call { border-left-color: #2563eb; }
+.log-entry.fold { border-left-color: #dc2626; opacity: 0.7; }
+.log-entry.allin { border-left-color: #ea580c; font-weight: bold; }
 
 .log-time {
     font-size: 0.7rem;
@@ -612,10 +765,7 @@ body {
 /* Modal Popup */
 .modal-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(0, 0, 0, 0.8);
     display: none;
     justify-content: center;
@@ -628,14 +778,14 @@ body {
 }
 
 .modal-content {
-    background: #1a202c;
+    background: #0f172a;
     border: 2px solid var(--gold);
     border-radius: 16px;
     padding: 28px;
     max-width: 480px;
     width: 90%;
     text-align: center;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.85);
 }
 
 .modal-title {
@@ -660,7 +810,7 @@ body {
 .btn-primary {
     background: var(--gold);
     color: #000;
-    font-weight: 700;
+    font-weight: 800;
     padding: 10px 24px;
     border: none;
     border-radius: 8px;
@@ -670,6 +820,6 @@ body {
 }
 
 .btn-primary:hover {
-    background: #e0b020;
+    background: #d97706;
     transform: scale(1.03);
 }
