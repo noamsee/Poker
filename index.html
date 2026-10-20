@@ -13,15 +13,12 @@
 </head>
 <body>
 
-    <!-- Orientation Prompt Overlay for Mobile Portrait -->
+    <!-- Orientation Prompt Overlay (Only on Mobile Touch Screens in Portrait) -->
     <div id="orientation-prompt" class="orientation-prompt">
-        <div class="rotate-phone-anim">
-            <div class="phone-icon"></div>
-            <span class="rotate-arrow">↻</span>
-        </div>
-        <h2>Please Rotate Your Device</h2>
-        <p>For the authentic casino experience like Zynga Poker, please turn your phone to <strong>Landscape</strong>.</p>
-        <button id="btn-dismiss-orientation" class="btn-dismiss-rotate">Play in Portrait anyway</button>
+        <div class="rotate-phone-simple">📱</div>
+        <h2>Turn your phone to landscape</h2>
+        <p>Hold your phone horizontally for the full casino view and buttons.</p>
+        <button id="btn-dismiss-orientation" class="btn-dismiss-rotate">Dismiss</button>
     </div>
 
     <!-- Top Compact Navigation Bar -->
@@ -118,7 +115,20 @@
                 <!-- SEAT 0: Bottom-Center (You) -->
                 <div class="seat seat-bottom-center" id="seat-0">
                     <div class="bet-chips" id="bet-0" style="display: none;">🪙 <span class="bet-val">0</span></div>
-                    <div class="user-hand-rank-pill" id="user-hand-name">—</div>
+                    
+                    <!-- DYNAMIC REAL-TIME HAND POWER METER -->
+                    <div class="hand-power-hud" id="hand-power-hud">
+                        <div class="power-hud-top">
+                            <span class="power-label">POWER</span>
+                            <span class="power-tier-badge" id="power-tier">WAITING</span>
+                            <span class="power-pct-text" id="power-pct">0%</span>
+                        </div>
+                        <div class="power-bar-track">
+                            <div class="power-bar-fill" id="power-bar-fill" style="width: 0%;"></div>
+                        </div>
+                        <div class="power-name-text" id="user-hand-name">—</div>
+                    </div>
+
                     <div class="hole-cards user-cards" id="cards-0"></div>
                     <div class="player-badge user-badge">
                         <div class="player-avatar">👤</div>

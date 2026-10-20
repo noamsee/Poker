@@ -103,6 +103,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const tablePot = document.getElementById('table-pot');
     const communityCardsContainer = document.getElementById('community-cards');
     const dealerAnnouncement = document.getElementById('dealer-announcement');
+    // Hand Power Meter Elements
+    const handPowerHud = document.getElementById('hand-power-hud');
+    const powerTierBadge = document.getElementById('power-tier');
+    const powerPctText = document.getElementById('power-pct');
+    const powerBarFill = document.getElementById('power-bar-fill');
     const userHandName = document.getElementById('user-hand-name');
     const headerBankroll = document.getElementById('header-bankroll');
     const headerHands = document.getElementById('header-hands');
@@ -212,20 +217,35 @@ document.addEventListener('DOMContentLoaded', () => {
         const human = game.players[0];
         if (human.folded || human.holeCards.length === 0) {
             userHandName.textContent = '—';
+            if (powerPctText) powerPctText.textContent = '0%';
+            if (powerBarFill) {
+                powerBarFill.style.width = '0%';
+                powerBarFill.style.backgroundColor = '#64748b';
+            }
+            if (powerTierBadge) {
+                powerTierBadge.textContent = 'WAITING';
+                powerTierBadge.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
+                powerTierBadge.style.color = '#94a3b8';
+            }
             return;
         }
 
-        const allCards = [...human.holeCards, ...game.communityCards];
-        if (allCards.length >= 5) {
-            const evalResult = evaluateHand(allCards);
-            userHandName.textContent = evalResult ? evalResult.name : '—';
-        } else if (human.holeCards.length === 2) {
-            const [c1, c2] = human.holeCards;
-            if (c1.rank === c2.rank) {
-                userHandName.textContent = `Pocket Pair (${VALUE_PLURALS[c1.rank]})`;
-            } else {
-                userHandName.textContent = `${VALUE_NAMES[Math.max(c1.rank, c2.rank)]} High`;
-            }
+        const power = calculateHandPower(human.holeCards, game.communityCards);
+        userHandName.textContent = power.name;
+
+        if (powerPctText) powerPctText.textContent = `${power.percent}%`;
+        if (powerBarFill) {
+            powerBarFill.style.width = `${power.percent}%`;
+            powerBarFill.style.backgroundColor = power.color;
+            powerBarFill.style.boxShadow = `0 0 10px ${power.color}`;
+        }
+        if (powerTierBadge) {
+            powerTierBadge.textContent = power.tier;
+            powerTierBadge.style.backgroundColor = `${power.color}25`;
+            powerTierBadge.style.color = power.color;
+        }
+        if (handPowerHud) {
+            handPowerHud.style.borderColor = `${power.color}70`;
         }
     }
 

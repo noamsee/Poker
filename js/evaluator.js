@@ -1,6 +1,6 @@
 /**
- * Texas Hold'em Hand Evaluator
- * Evaluates best 5-card poker hand from up to 7 cards.
+ * Texas Hold'em Hand Evaluator & Real-Time Hand Power Engine
+ * Evaluates best 5-card poker hand and computes hand power (0-100%) for preflop and postflop
  */
 
 const HAND_RANKS = {
@@ -54,10 +54,6 @@ function getCombinations(arr, k) {
     return results;
 }
 
-/**
- * Evaluates a single 5-card hand.
- * card: { rank: 2..14, suit: '♠'|'♥'|'♦'|'♣' }
- */
 function evaluate5CardHand(cards) {
     const sorted = [...cards].sort((a, b) => b.rank - a.rank);
     const ranks = sorted.map(c => c.rank);
@@ -65,7 +61,6 @@ function evaluate5CardHand(cards) {
 
     const isFlush = suits.every(s => s === suits[0]);
 
-    // Check straight (including A-2-3-4-5 wheel)
     let isStraight = false;
     let straightHigh = 0;
 
@@ -76,11 +71,10 @@ function evaluate5CardHand(cards) {
             straightHigh = ranks[0];
         } else if (ranks[0] === 14 && ranks[1] === 5 && ranks[2] === 4 && ranks[3] === 3 && ranks[4] === 2) {
             isStraight = true;
-            straightHigh = 5; // 5-high straight
+            straightHigh = 5;
         }
     }
 
-    // Rank counts
     const counts = {};
     ranks.forEach(r => { counts[r] = (counts[r] || 0) + 1; });
     const countPairs = Object.entries(counts).map(([rank, count]) => ({
@@ -158,7 +152,7 @@ function evaluate5CardHand(cards) {
             category: HAND_RANKS.TWO_PAIR,
             score: [HAND_RANKS.TWO_PAIR, highPair, lowPair, kicker],
             cards: sorted,
-            name: `Two Pair (${VALUE_PLURALS[highPair]} and ${VALUE_PLURALS[lowPair]})`
+            name: `Two Pair (${VALUE_PLURALS[highPair]} & ${VALUE_PLURALS[lowPair]})`
         };
     }
 
@@ -183,10 +177,6 @@ function evaluate5CardHand(cards) {
     };
 }
 
-/**
- * Compare two scores array element by element.
- * Returns >0 if a beats b, <0 if b beats a, 0 if tie.
- */
 function compareScores(scoreA, scoreB) {
     for (let i = 0; i < Math.max(scoreA.length, scoreB.length); i++) {
         const a = scoreA[i] || 0;
@@ -196,9 +186,6 @@ function compareScores(scoreA, scoreB) {
     return 0;
 }
 
-/**
- * Evaluates the best 5-card hand out of 5 to 7 cards.
- */
 function evaluateHand(allCards) {
     if (!allCards || allCards.length < 5) {
         return null;
@@ -221,6 +208,118 @@ function evaluateHand(allCards) {
     return bestHand;
 }
 
+/**
+ * Real-Time Hand Power Meter Calculator
+ * Returns: { percent: number, tier: string, color: string, name: string }
+ */
+function calculateHandPower(holeCards, communityCards = []) {
+    if (!holeCards || holeCards.length < 2) {
+        return { percent: 0, tier: 'NO CARDS', color: '#64748b', name: '—' };
+    }
+
+    // 1. PRE-FLOP (Only 2 cards)
+    if (!communityCards || communityCards.length === 0) {
+        const [c1, c2] = holeCards;
+        const highRank = Math.max(c1.rank, c2.rank);
+        const lowRank = Math.min(c1.rank, c2.rank);
+        const isPair = c1.rank === c2.rank;
+        const isSuited = c1.suit === c2.suit;
+        const gap = highRank - lowRank;
+
+        let pct = 0;
+        let name = '';
+
+        if (isPair) {
+            name = `Pocket Pair of ${VALUE_PLURALS[highRank]}`;
+            // 22 = 50%, AA = 95%
+            pct = 50 + Math.round(((highRank - 2) / 12) * 45);
+        } else {
+            name = `${VALUE_NAMES[highRank]}-${VALUE_NAMES[lowRank]}${isSuited ? 's' : 'o'}`;
+            pct = 15 + Math.round((highRank / 14) * 35 + (lowRank / 14) * 20);
+            if (isSuited) pct += 8;
+            if (gap <= 2) pct += 5;
+        }
+
+        pct = Math.min(96, Math.max(12, pct));
+        return getPowerTierData(pct, name);
+    }
+
+    // 2. POST-FLOP (5, 6, or 7 cards)
+    const allCards = [...holeCards, ...communityCards];
+    const evaluated = evaluateHand(allCards);
+    if (!evaluated) {
+        return { percent: 20, tier: 'WEAK', color: '#ef4444', name: 'Evaluating...' };
+    }
+
+    const cat = evaluated.category;
+    let pct = 0;
+
+    switch (cat) {
+        case HAND_RANKS.STRAIGHT_FLUSH:
+            pct = evaluated.name.includes('Royal') ? 100 : 98;
+            break;
+        case HAND_RANKS.FOUR_OF_A_KIND:
+            pct = 95 + Math.round((evaluated.score[1] / 14) * 3);
+            break;
+        case HAND_RANKS.FULL_HOUSE:
+            pct = 90 + Math.round((evaluated.score[1] / 14) * 4);
+            break;
+        case HAND_RANKS.FLUSH:
+            pct = 82 + Math.round((evaluated.score[1] / 14) * 6);
+            break;
+        case HAND_RANKS.STRAIGHT:
+            pct = 75 + Math.round((evaluated.score[1] / 14) * 6);
+            break;
+        case HAND_RANKS.THREE_OF_A_KIND:
+            pct = 65 + Math.round((evaluated.score[1] / 14) * 8);
+            break;
+        case HAND_RANKS.TWO_PAIR:
+            pct = 52 + Math.round((evaluated.score[1] / 14) * 11);
+            break;
+        case HAND_RANKS.ONE_PAIR:
+            pct = 35 + Math.round((evaluated.score[1] / 14) * 15);
+            break;
+        case HAND_RANKS.HIGH_CARD:
+        default:
+            pct = 12 + Math.round((evaluated.score[1] / 14) * 18);
+            break;
+    }
+
+    return getPowerTierData(pct, evaluated.name);
+}
+
+function getPowerTierData(percent, name) {
+    let tier = 'WEAK';
+    let color = '#ef4444'; // Red
+
+    if (percent >= 90) {
+        tier = 'MONSTER HAND';
+        color = '#ec4899'; // Vibrant Pink / Gold
+    } else if (percent >= 75) {
+        tier = 'VERY STRONG';
+        color = '#10b981'; // Emerald
+    } else if (percent >= 60) {
+        tier = 'STRONG';
+        color = '#22c55e'; // Green
+    } else if (percent >= 40) {
+        tier = 'MODERATE';
+        color = '#f59e0b'; // Amber / Yellow
+    } else {
+        tier = 'WEAK HAND';
+        color = '#ef4444'; // Red
+    }
+
+    return { percent, tier, color, name };
+}
+
 if (typeof module !== 'undefined') {
-    module.exports = { evaluateHand, compareScores, HAND_RANKS, HAND_NAMES, VALUE_NAMES, VALUE_PLURALS };
+    module.exports = { 
+        evaluateHand, 
+        compareScores, 
+        calculateHandPower,
+        HAND_RANKS, 
+        HAND_NAMES, 
+        VALUE_NAMES, 
+        VALUE_PLURALS 
+    };
 }
