@@ -4,16 +4,13 @@
  * Pre-Flop -> Flop -> Turn -> River -> Showdown
  */
 
-if (typeof require !== 'undefined') {
-    if (typeof Deck === 'undefined') {
-        var { Deck } = require('./cards.js');
-    }
-    if (typeof evaluateHand === 'undefined') {
-        var { evaluateHand, compareScores, HAND_NAMES } = require('./evaluator.js');
-    }
-    if (typeof PokerAI === 'undefined') {
-        var { PokerAI } = require('./ai.js');
-    }
+if (typeof window === 'undefined' && typeof require !== 'undefined') {
+    global.Deck = require('./cards.js').Deck;
+    const ev = require('./evaluator.js');
+    global.evaluateHand = ev.evaluateHand;
+    global.compareScores = ev.compareScores;
+    global.HAND_NAMES = ev.HAND_NAMES;
+    global.PokerAI = require('./ai.js').PokerAI;
 }
 
 class PokerGame {
