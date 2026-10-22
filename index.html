@@ -13,12 +13,10 @@
 </head>
 <body>
 
-    <!-- Orientation Prompt Overlay (Only on Mobile Touch Screens in Portrait) -->
-    <div id="orientation-prompt" class="orientation-prompt">
-        <div class="rotate-phone-simple">📱</div>
-        <h2>Turn your phone to landscape</h2>
-        <p>Hold your phone horizontally for the full casino view and buttons.</p>
-        <button id="btn-dismiss-orientation" class="btn-dismiss-rotate">Dismiss</button>
+    <!-- Optional Orientation Banner (Discreet hint, never blocks play) -->
+    <div id="orientation-prompt" class="orientation-prompt" style="display: none;">
+        <span class="orientation-hint-text">📱 Rotate phone for wide casino view</span>
+        <button id="btn-dismiss-orientation" class="btn-dismiss-rotate">✕</button>
     </div>
 
     <!-- Top Compact Navigation Bar -->
@@ -149,7 +147,7 @@
                     </div>
                 </div>
 
-                <!-- SEAT 0: Bottom-Center (You) - Non-overlapping Horizontal Layout -->
+                <!-- SEAT 0: Bottom-Center (You) - Pokerist Horizontal Layout -->
                 <div class="seat seat-bottom-center" id="seat-0">
                     <div class="bet-chips" id="bet-0" style="display: none;"><span class="chip-disc gold"></span><span class="bet-val">0</span></div>
 
@@ -170,21 +168,8 @@
                             </div>
                         </div>
 
-                        <!-- Center: Tilted Hole Cards -->
+                        <!-- Right: Tilted Hole Cards fanned beside the avatar (Pokerist style) -->
                         <div class="hole-cards user-cards" id="cards-0"></div>
-
-                        <!-- Right: Real-Time Hand Power Meter (Beside cards, never overlapping table center!) -->
-                        <div class="hand-power-hud" id="hand-power-hud">
-                            <div class="power-hud-top">
-                                <span class="power-label">POWER</span>
-                                <span class="power-tier-badge" id="power-tier">WAITING</span>
-                                <span class="power-pct-text" id="power-pct">0%</span>
-                            </div>
-                            <div class="power-bar-track">
-                                <div class="power-bar-fill" id="power-bar-fill" style="width: 0%;"></div>
-                            </div>
-                            <div class="power-name-text" id="user-hand-name">—</div>
-                        </div>
                     </div>
                 </div>
 
@@ -204,8 +189,18 @@
 
     </main>
 
-    <!-- Bottom Zynga-Style Action Bar -->
+    <!-- Bottom Zynga/Pokerist-Style Action Bar -->
     <footer class="action-bar">
+
+        <!-- Real-Time Hand Power / Odds Dock (Docked at bottom, 100% off table felt!) -->
+        <div class="action-odds-dock" id="action-odds-dock">
+            <div class="odds-rank-chip" id="user-hand-name">—</div>
+            <div class="odds-tier-pill" id="power-tier">WAITING</div>
+            <div class="odds-bar-track">
+                <div class="odds-bar-fill" id="power-bar-fill" style="width: 0%;"></div>
+            </div>
+            <div class="odds-pct" id="power-pct">0%</div>
+        </div>
 
         <!-- Slide-up Raise Slider Drawer -->
         <div class="raise-panel" id="raise-panel">
@@ -226,8 +221,16 @@
             </div>
         </div>
 
-        <!-- Main Action Buttons -->
-        <div class="action-buttons-row">
+        <!-- Deal Hand Action Row (Shown between hands for thumb-friendly play) -->
+        <div class="deal-action-row" id="deal-action-row">
+            <button id="btn-action-deal" class="action-btn btn-action-deal">
+                <span class="deal-icon">🃏</span>
+                <span class="btn-main-text" id="btn-action-deal-label">DEAL HAND</span>
+            </button>
+        </div>
+
+        <!-- Main Action Buttons (Active during hand) -->
+        <div class="action-buttons-row" id="action-buttons-row" style="display: none;">
             <button id="btn-fold" class="action-btn btn-fold" disabled>
                 <span class="btn-main-text">FOLD</span>
             </button>

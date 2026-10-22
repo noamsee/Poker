@@ -118,7 +118,7 @@ function getCourtIllustration(rankLabel, suitName, color) {
     </div>`;
 }
 
-// Generate realistic pip layouts
+// Generate clean, modern Pokerist-style card layouts (single bold center suit)
 function getPipGrid(rank, suitName) {
     const suitSvg = SUIT_SVGS[suitName];
 
@@ -139,40 +139,13 @@ function getPipGrid(rank, suitName) {
                     <circle cx="50" cy="55" r="9" fill="#d97706"/>
                     <circle cx="50" cy="55" r="6" fill="#0f172a"/>
                 </svg>
-                <div class="ace-badge">ROYAL</div>
             </div>`;
         }
         return `<div class="ace-center"><div class="large-suit-pip">${suitSvg}</div></div>`;
     }
 
-    // Numbered cards 2 to 10
-    const pipRows = {
-        2: [1, 0, 1],
-        3: [1, 1, 1],
-        4: [2, 0, 2],
-        5: [2, 1, 2],
-        6: [2, 2, 2],
-        7: [2, 3, 2],
-        8: [3, 2, 3],
-        9: [4, 1, 4],
-        10: [4, 2, 4]
-    };
-
-    const config = pipRows[rank] || [1];
-    let html = `<div class="pips-matrix rank-${rank}">`;
-
-    config.forEach((count, colIdx) => {
-        html += `<div class="pip-column col-${colIdx}">`;
-        for (let i = 0; i < count; i++) {
-            // Invert lower pips for standard playing card orientation
-            const isBottomHalf = i >= Math.ceil(count / 2);
-            html += `<div class="pip ${isBottomHalf ? 'inverted' : ''}">${suitSvg}</div>`;
-        }
-        html += `</div>`;
-    });
-
-    html += `</div>`;
-    return html;
+    // Numbered cards 2 to 10: Single bold central suit (Pokerist style)
+    return `<div class="clean-card-center"><div class="card-main-suit">${suitSvg}</div></div>`;
 }
 
 class Card {

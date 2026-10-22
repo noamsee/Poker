@@ -104,8 +104,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const communityCardsContainer = document.getElementById('community-cards');
     const dealerAnnouncement = document.getElementById('dealer-announcement');
     const centerHandRank = document.getElementById('center-hand-rank');
-    // Hand Power Meter Elements
-    const handPowerHud = document.getElementById('hand-power-hud');
+    // Hand Power / Odds Meter Elements (Docked in Action Bar)
+    const actionOddsDock = document.getElementById('action-odds-dock');
     const powerTierBadge = document.getElementById('power-tier');
     const powerPctText = document.getElementById('power-pct');
     const powerBarFill = document.getElementById('power-bar-fill');
@@ -114,7 +114,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const headerHands = document.getElementById('header-hands');
     const btnSoundToggle = document.getElementById('btn-sound-toggle');
 
-    // Controls
+    // Action Controls & Rows
+    const dealActionRow = document.getElementById('deal-action-row');
+    const actionButtonsRow = document.getElementById('action-buttons-row');
+    const btnActionDeal = document.getElementById('btn-action-deal');
+    const btnActionDealLabel = document.getElementById('btn-action-deal-label');
+
     const btnFold = document.getElementById('btn-fold');
     const btnCheckCall = document.getElementById('btn-check-call');
     const btnCheckCallLabel = document.getElementById('btn-check-call-label');
@@ -175,24 +180,40 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalBody = document.getElementById('modal-body');
     const btnModalNext = document.getElementById('btn-modal-next');
 
-    // Dealer Button Seat Coordinates (Responsive Percentages)
-    const dealerPositions = {
-        0: { bottom: '26%', left: '50%', transform: 'translateX(-95px)' }, // You
-        1: { top: '54%', left: '17%', transform: 'none' },                   // Alex (Mid-Left)
-        2: { top: '22%', left: '25%', transform: 'none' },                  // Claire (Top-Left)
-        3: { top: '22%', right: '25%', transform: 'none' },                 // Tom (Top-Right)
-        4: { top: '54%', right: '17%', transform: 'none' }                   // Elena (Mid-Right)
-    };
-
     function updateDealerButton(dealerIdx) {
-        const pos = dealerPositions[dealerIdx];
-        if (!pos) return;
-        dealerBtn.style.top = pos.top || 'auto';
-        dealerBtn.style.bottom = pos.bottom || 'auto';
-        dealerBtn.style.left = pos.left || 'auto';
-        dealerBtn.style.right = pos.right || 'auto';
-        dealerBtn.style.transform = pos.transform || 'none';
+        if (!dealerBtn) return;
+        const seat = document.getElementById(`seat-${dealerIdx}`);
+        const table = document.querySelector('.poker-table');
+        if (seat && table) {
+            const sRect = seat.getBoundingClientRect();
+            const tRect = table.getBoundingClientRect();
+            if (tRect.width > 0 && tRect.height > 0) {
+                const sCenterX = sRect.left + sRect.width / 2 - tRect.left;
+                const sCenterY = sRect.top + sRect.height / 2 - tRect.top;
+                const tCenterX = tRect.width / 2;
+                const tCenterY = tRect.height / 2;
+                const angle = Math.atan2(tCenterY - sCenterY, tCenterX - sCenterX);
+                const dist = Math.min(44, Math.max(28, tRect.width * 0.055));
+
+                dealerBtn.style.left = `${Math.round(sCenterX + Math.cos(angle) * dist - 12)}px`;
+                dealerBtn.style.top = `${Math.round(sCenterY + Math.sin(angle) * dist - 12)}px`;
+                dealerBtn.style.bottom = 'auto';
+                dealerBtn.style.right = 'auto';
+                dealerBtn.style.transform = 'none';
+                return;
+            }
+        }
+        // Fallback
+        dealerBtn.style.left = '50%';
+        dealerBtn.style.bottom = '22%';
+        dealerBtn.style.top = 'auto';
+        dealerBtn.style.right = 'auto';
+        dealerBtn.style.transform = 'translateX(-70px)';
     }
+
+    window.addEventListener('resize', () => {
+        updateDealerButton(game.dealerIndex);
+    });
 
     function updateBankrollDisplay() {
         const humanChips = game.players[0].chips;
@@ -289,8 +310,8 @@ document.addEventListener('DOMContentLoaded', () => {
             powerTierBadge.style.backgroundColor = `${power.color}25`;
             powerTierBadge.style.color = power.color;
         }
-        if (handPowerHud) {
-            handPowerHud.style.borderColor = `${power.color}70`;
+        if (actionOddsDock) {
+            actionOddsDock.style.borderColor = `${power.color}80`;
         }
 
         // Center hand rank badge (Pokerist style: e.g. THREE OF A KIND, PAIR)
@@ -512,19 +533,24 @@ document.addEventListener('DOMContentLoaded', () => {
         updateHumanControls(false);
     });
 
-    // Deal Next Hand
-    btnNewHand.addEventListener('click', () => {
-        clearStatuses();
-        raisePanel.classList.remove('active');
-        game.startNewHand();
-    });
-
-    btnModalNext.addEventListener('click', () => {
+    // Unified start hand helper that clears statuses, closes modals, and deals
+    function startHandSafe() {
         resultModal.classList.remove('active');
         clearStatuses();
         raisePanel.classList.remove('active');
         game.startNewHand();
-    });
+    }
+
+    if (btnNewHand) btnNewHand.addEventListener('click', startHandSafe);
+    if (btnActionDeal) btnActionDeal.addEventListener('click', startHandSafe);
+    if (btnModalNext) btnModalNext.addEventListener('click', startHandSafe);
+    if (resultModal) {
+        resultModal.addEventListener('click', (e) => {
+            if (e.target === resultModal) {
+                startHandSafe();
+            }
+        });
+    }
 
     btnRebuy.addEventListener('click', () => {
         game.rebuyHuman(1000);
@@ -559,13 +585,18 @@ document.addEventListener('DOMContentLoaded', () => {
     game.on('handStarted', () => {
         handsPlayedCount++;
         headerHands.textContent = handsPlayedCount;
+        if (dealActionRow) dealActionRow.style.display = 'none';
+        if (actionButtonsRow) actionButtonsRow.style.display = 'flex';
+        if (btnNewHand) {
+            btnNewHand.disabled = true;
+            btnNewHand.textContent = 'In Hand';
+        }
         updateDealerButton(game.dealerIndex);
         updateBankrollDisplay();
         updatePot(game.pot);
         updateBets();
         renderCommunityCards([]);
         dealerAnnouncement.textContent = 'Blinds posted. Hole cards dealt.';
-        btnNewHand.disabled = true;
     });
 
     game.on('cardsDealt', () => {
@@ -630,7 +661,13 @@ document.addEventListener('DOMContentLoaded', () => {
         highlightActiveTurn(-1);
         updateBankrollDisplay();
         updatePot(0);
-        btnNewHand.disabled = false;
+        if (dealActionRow) dealActionRow.style.display = 'flex';
+        if (actionButtonsRow) actionButtonsRow.style.display = 'none';
+        if (btnNewHand) {
+            btnNewHand.disabled = false;
+            btnNewHand.textContent = 'Deal Hand';
+        }
+        if (btnActionDealLabel) btnActionDealLabel.textContent = 'DEAL NEXT HAND';
         raisePanel.classList.remove('active');
 
         const winnerNames = data.winners ? data.winners.map(w => w.name).join(' & ') : 'Winner';
@@ -658,6 +695,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Initial setup
+    if (dealActionRow) dealActionRow.style.display = 'flex';
+    if (actionButtonsRow) actionButtonsRow.style.display = 'none';
+    if (btnNewHand) {
+        btnNewHand.disabled = false;
+        btnNewHand.textContent = 'Deal Hand';
+    }
     updateDealerButton(0);
     renderCommunityCards([]);
     updateBankrollDisplay();
