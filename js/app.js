@@ -1,92 +1,10 @@
 /**
- * UI Controller & Audio Synthesizer for Texas Hold'em
- * Zynga Poker Inspired Mobile Landscape UX
+ * UI Controller for Texas Hold'em
+ * Zynga & Pokerist Inspired Mobile & Desktop UX
  */
-
-class SoundEffects {
-    constructor() {
-        this.ctx = null;
-        this.enabled = true;
-    }
-
-    init() {
-        if (!this.ctx) {
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            if (AudioContext) {
-                this.ctx = new AudioContext();
-            }
-        }
-        if (this.ctx && this.ctx.state === 'suspended') {
-            this.ctx.resume();
-        }
-    }
-
-    playCardSlide() {
-        if (!this.enabled) return;
-        this.init();
-        if (!this.ctx) return;
-
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(300, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(120, this.ctx.currentTime + 0.08);
-
-        gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.08);
-
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.08);
-    }
-
-    playChipSound() {
-        if (!this.enabled) return;
-        this.init();
-        if (!this.ctx) return;
-
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(1800, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.06);
-
-        gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.06);
-
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.06);
-    }
-
-    playWinSound() {
-        if (!this.enabled) return;
-        this.init();
-        if (!this.ctx) return;
-
-        const notes = [523.25, 659.25, 783.99, 1046.50];
-        notes.forEach((freq, idx) => {
-            const osc = this.ctx.createOscillator();
-            const gain = this.ctx.createGain();
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.1);
-
-            gain.gain.setValueAtTime(0.25, this.ctx.currentTime + idx * 0.1);
-            gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + idx * 0.1 + 0.25);
-
-            osc.connect(gain);
-            gain.connect(this.ctx.destination);
-            osc.start(this.ctx.currentTime + idx * 0.1);
-            osc.stop(this.ctx.currentTime + idx * 0.1 + 0.25);
-        });
-    }
-}
 
 document.addEventListener('DOMContentLoaded', () => {
     const game = new PokerGame();
-    const sfx = new SoundEffects();
     let handsPlayedCount = 0;
 
     // Orientation Prompt
@@ -112,7 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const userHandName = document.getElementById('user-hand-name');
     const headerBankroll = document.getElementById('header-bankroll');
     const headerHands = document.getElementById('header-hands');
-    const btnSoundToggle = document.getElementById('btn-sound-toggle');
 
     // Action Controls & Rows
     const dealActionRow = document.getElementById('deal-action-row');
@@ -242,7 +159,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 container.appendChild(cardEl);
             });
         });
-        sfx.playCardSlide();
     }
 
     function renderCommunityCards(cards) {
@@ -257,7 +173,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 communityCardsContainer.appendChild(slot);
             }
         }
-        if (cards.length > 0) sfx.playCardSlide();
     }
 
     function updatePot(amount) {
@@ -501,7 +416,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (callAmount === 0) {
             game.executeAction(human, 'check');
         } else {
-            sfx.playChipSound();
             game.executeAction(human, 'call');
         }
         updateHumanControls(false);
@@ -522,7 +436,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const targetTotal = parseInt(raiseSlider.value);
         const amountToAdd = targetTotal - human.currentBet;
 
-        sfx.playChipSound();
         if (targetTotal >= human.chips + human.currentBet) {
             game.executeAction(human, 'all-in');
         } else if (game.currentBet === 0) {
@@ -556,14 +469,6 @@ document.addEventListener('DOMContentLoaded', () => {
         game.rebuyHuman(1000);
         updateBankrollDisplay();
     });
-
-    // Sound toggle
-    if (btnSoundToggle) {
-        btnSoundToggle.addEventListener('click', () => {
-            sfx.enabled = !sfx.enabled;
-            btnSoundToggle.textContent = sfx.enabled ? '🔊' : '🔇';
-        });
-    }
 
     // Log Drawer Toggle
     btnToggleLog.addEventListener('click', () => {
@@ -653,7 +558,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     game.on('showdown', (data) => {
         renderHoleCards(true);
-        sfx.playWinSound();
         dealerAnnouncement.textContent = `Showdown! ${data.winningHand.name}`;
     });
 
