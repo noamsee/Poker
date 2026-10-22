@@ -50,8 +50,19 @@
                 <!-- Dealer Button Element -->
                 <div id="dealer-btn" class="dealer-button">D</div>
 
-                <!-- SEAT 1: Top-Left (Alex - Aggressive) -->
-                <div class="seat seat-top-left" id="seat-1">
+                <!-- Dealer Station: Top Center Behind Rim -->
+                <div class="dealer-station">
+                    <div class="dealer-avatar-wrap">
+                        <div class="dealer-avatar">🤵</div>
+                        <div class="dealer-name-tag">DEALER</div>
+                    </div>
+                    <div class="dealer-tray">
+                        <div class="dealer-deck-shoe"></div>
+                    </div>
+                </div>
+
+                <!-- SEAT 1: Mid-Left (Alex - Aggressive) -->
+                <div class="seat seat-mid-left" id="seat-1">
                     <div class="hole-cards" id="cards-1"></div>
                     <div class="player-badge">
                         <div class="player-avatar">🦊</div>
@@ -61,11 +72,11 @@
                         </div>
                         <div class="player-status-tag" id="status-1" style="display: none;"></div>
                     </div>
-                    <div class="bet-chips" id="bet-1" style="display: none;">🪙 <span class="bet-val">0</span></div>
+                    <div class="bet-chips" id="bet-1" style="display: none;"><span class="chip-disc red"></span><span class="bet-val">0</span></div>
                 </div>
 
-                <!-- SEAT 2: Top-Center (Claire - Conservative) -->
-                <div class="seat seat-top-center" id="seat-2">
+                <!-- SEAT 2: Top-Left (Claire - Conservative) -->
+                <div class="seat seat-top-left" id="seat-2">
                     <div class="hole-cards" id="cards-2"></div>
                     <div class="player-badge">
                         <div class="player-avatar">🦉</div>
@@ -75,7 +86,7 @@
                         </div>
                         <div class="player-status-tag" id="status-2" style="display: none;"></div>
                     </div>
-                    <div class="bet-chips" id="bet-2" style="display: none;">🪙 <span class="bet-val">0</span></div>
+                    <div class="bet-chips" id="bet-2" style="display: none;"><span class="chip-disc blue"></span><span class="bet-val">0</span></div>
                 </div>
 
                 <!-- SEAT 3: Top-Right (Tom - Balanced) -->
@@ -89,11 +100,33 @@
                         </div>
                         <div class="player-status-tag" id="status-3" style="display: none;"></div>
                     </div>
-                    <div class="bet-chips" id="bet-3" style="display: none;">🪙 <span class="bet-val">0</span></div>
+                    <div class="bet-chips" id="bet-3" style="display: none;"><span class="chip-disc green"></span><span class="bet-val">0</span></div>
                 </div>
 
-                <!-- CENTER: Pot & Community Cards -->
+                <!-- SEAT 4: Mid-Right (Elena - Aggressive) -->
+                <div class="seat seat-mid-right" id="seat-4">
+                    <div class="hole-cards" id="cards-4"></div>
+                    <div class="player-badge">
+                        <div class="player-avatar">🧙</div>
+                        <div class="player-details">
+                            <span class="player-name">Elena</span>
+                            <span class="player-chips" id="chips-4">$1000</span>
+                        </div>
+                        <div class="player-status-tag" id="status-4" style="display: none;"></div>
+                    </div>
+                    <div class="bet-chips" id="bet-4" style="display: none;"><span class="chip-disc orange"></span><span class="bet-val">0</span></div>
+                </div>
+
+                <!-- CENTER: Watermark, Pot & Community Cards & Pokerist Banners -->
                 <div class="table-center">
+                    <div class="table-felt-watermark">
+                        <div class="wm-title">POKERIST</div>
+                        <div class="wm-sub">BUY-IN: $10 / $20</div>
+                    </div>
+
+                    <!-- Center Hand Rank Badge (Pokerist Style: e.g. THREE OF A KIND, PAIR) -->
+                    <div class="center-hand-rank" id="center-hand-rank" style="display: none;">PAIR</div>
+
                     <div class="pot-display">
                         <span class="pot-chips">🪙</span>
                         <span>POT: <span id="table-pot">$0</span></span>
@@ -107,6 +140,7 @@
                         <div class="community-card-slot"></div>
                     </div>
 
+                    <!-- Announcement / Action Prompt Pill (Pokerist Style: e.g. CHECK or RAISE) -->
                     <div class="dealer-announcement" id="dealer-announcement">
                         Click "Deal Hand" to begin!
                     </div>
@@ -114,8 +148,14 @@
 
                 <!-- SEAT 0: Bottom-Center (You) -->
                 <div class="seat seat-bottom-center" id="seat-0">
-                    <div class="bet-chips" id="bet-0" style="display: none;">🪙 <span class="bet-val">0</span></div>
+                    <div class="bet-chips" id="bet-0" style="display: none;"><span class="chip-disc gold"></span><span class="bet-val">0</span></div>
                     
+                    <!-- Pokerist 'THIS IS YOU' Pointer Tag -->
+                    <div class="this-is-you-pill" id="this-is-you-pill">
+                        <span class="this-is-you-text">THIS IS YOU</span>
+                        <span class="this-is-you-arrow">▼</span>
+                    </div>
+
                     <!-- DYNAMIC REAL-TIME HAND POWER METER -->
                     <div class="hand-power-hud" id="hand-power-hud">
                         <div class="power-hud-top">
@@ -190,6 +230,7 @@
 
             <button id="btn-raise-toggle" class="action-btn btn-raise" disabled>
                 <span class="btn-main-text" id="btn-raise-label">BET $40</span>
+                <span class="btn-chevron">▲</span>
             </button>
         </div>
 

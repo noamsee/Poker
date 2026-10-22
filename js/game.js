@@ -4,6 +4,18 @@
  * Pre-Flop -> Flop -> Turn -> River -> Showdown
  */
 
+if (typeof require !== 'undefined') {
+    if (typeof Deck === 'undefined') {
+        var { Deck } = require('./cards.js');
+    }
+    if (typeof evaluateHand === 'undefined') {
+        var { evaluateHand, compareScores, HAND_NAMES } = require('./evaluator.js');
+    }
+    if (typeof PokerAI === 'undefined') {
+        var { PokerAI } = require('./ai.js');
+    }
+}
+
 class PokerGame {
     constructor() {
         this.deck = new Deck();
@@ -22,7 +34,8 @@ class PokerGame {
             { id: 0, name: 'You', isHuman: true, chips: 1000, holeCards: [], currentBet: 0, hasActed: false, folded: false, allIn: false, avatar: '👤' },
             { id: 1, name: 'Alex', isHuman: false, personality: 'aggressive', chips: 1000, holeCards: [], currentBet: 0, hasActed: false, folded: false, allIn: false, avatar: '🦊' },
             { id: 2, name: 'Claire', isHuman: false, personality: 'conservative', chips: 1000, holeCards: [], currentBet: 0, hasActed: false, folded: false, allIn: false, avatar: '🦉' },
-            { id: 3, name: 'Tom', isHuman: false, personality: 'balanced', chips: 1000, holeCards: [], currentBet: 0, hasActed: false, folded: false, allIn: false, avatar: '🐺' }
+            { id: 3, name: 'Tom', isHuman: false, personality: 'balanced', chips: 1000, holeCards: [], currentBet: 0, hasActed: false, folded: false, allIn: false, avatar: '🐺' },
+            { id: 4, name: 'Elena', isHuman: false, personality: 'aggressive', chips: 1000, holeCards: [], currentBet: 0, hasActed: false, folded: false, allIn: false, avatar: '🧙' }
         ];
 
         this.history = [];
@@ -47,6 +60,14 @@ class PokerGame {
     }
 
     startNewHand() {
+        // Auto re-buy for broke AI players so table remains full (5 players)
+        this.players.forEach(p => {
+            if (!p.isHuman && p.chips <= 0) {
+                p.chips = 1000;
+                this.log(`${p.name} re-bought for $1,000 stack.`, 'info');
+            }
+        });
+
         const activePlayers = this.players.filter(p => p.chips > 0);
         if (activePlayers.length < 2) {
             this.log('Not enough players with chips to start a hand!', 'alert');
@@ -244,11 +265,11 @@ class PokerGame {
         switch (action) {
             case 'fold':
                 player.folded = true;
-                this.log(`${player.name} folds`, 'fold');
+                this.log(player.isHuman ? 'You fold' : `${player.name} folds`, 'fold');
                 break;
 
             case 'check':
-                this.log(`${player.name} checks`, 'check');
+                this.log(player.isHuman ? 'You check' : `${player.name} checks`, 'check');
                 break;
 
             case 'call': {
@@ -257,7 +278,7 @@ class PokerGame {
                 player.currentBet += callAmount;
                 this.pot += callAmount;
                 if (player.chips === 0) player.allIn = true;
-                this.log(`${player.name} calls $${callAmount}`, 'call');
+                this.log(player.isHuman ? `You call $${callAmount}` : `${player.name} calls $${callAmount}`, 'call');
                 break;
             }
 
@@ -280,7 +301,9 @@ class PokerGame {
                 });
 
                 if (player.chips === 0) player.allIn = true;
-                const actionLabel = this.currentRound !== 'PREFLOP' && toCall === 0 ? 'bets' : 'raises to';
+                const actionLabel = this.currentRound !== 'PREFLOP' && toCall === 0 
+                    ? (player.isHuman ? 'bet' : 'bets') 
+                    : (player.isHuman ? 'raise to' : 'raises to');
                 this.log(`${player.name} ${actionLabel} $${player.currentBet}`, 'raise');
                 break;
             }
@@ -304,7 +327,7 @@ class PokerGame {
                         }
                     });
                 }
-                this.log(`${player.name} goes ALL-IN for $${allInAmount}!`, 'allin');
+                this.log(player.isHuman ? `You go ALL-IN for $${allInAmount}!` : `${player.name} goes ALL-IN for $${allInAmount}!`, 'allin');
                 break;
             }
         }
@@ -374,7 +397,7 @@ class PokerGame {
 
     handleLastPlayerStanding(winner) {
         winner.chips += this.pot;
-        this.log(`Everyone folded. ${winner.name} wins the pot ($${this.pot})!`, 'win');
+        this.log(winner.isHuman ? `Everyone folded. You win the pot ($${this.pot})!` : `Everyone folded. ${winner.name} wins the pot ($${this.pot})!`, 'win');
         this.emit('handComplete', {
             winners: [winner],
             potWon: this.pot,
@@ -408,8 +431,11 @@ class PokerGame {
 
         const winnerNames = winners.map(w => w.player.name).join(' & ');
         const handDescription = winners[0].hand.name;
+        const winPhrase = (winners.length === 1 && winners[0].player.isHuman) 
+            ? `You win with ${handDescription}!` 
+            : `${winnerNames} wins with ${handDescription}!`;
 
-        this.log(`Showdown! ${winnerNames} wins with ${handDescription}! (Pot: $${this.pot})`, 'win');
+        this.log(`Showdown! ${winPhrase} (Pot: $${this.pot})`, 'win');
 
         this.emit('showdown', {
             evaluations,
@@ -429,6 +455,11 @@ class PokerGame {
 
     rebuyHuman(amount = 1000) {
         this.players[0].chips = amount;
+        this.players.forEach(p => {
+            if (!p.isHuman && p.chips <= 0) {
+                p.chips = 1000;
+            }
+        });
         this.log(`You re-bought for $${amount}! Welcome back to the table.`, 'info');
         this.emit('rebuy');
     }

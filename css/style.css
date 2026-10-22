@@ -1,15 +1,15 @@
 :root {
-    --bg-dark: #070a0f;
-    --table-felt: radial-gradient(ellipse at 50% 50%, #1a5732 0%, #103820 65%, #081d11 100%);
-    --wood-rim: linear-gradient(135deg, #422310 0%, #633618 50%, #201006 100%);
+    --bg-dark: #080d15;
+    --wallpaper-grad: radial-gradient(circle at 50% 40%, #152438 0%, #0d1624 70%, #060a10 100%);
+    --table-felt: radial-gradient(ellipse at 50% 50%, #5286a0 0%, #3e6a82 55%, #27495d 100%);
     --gold: #f59e0b;
     --gold-glow: rgba(245, 158, 11, 0.45);
     --gold-border: #d97706;
     --card-red: #c51624;
     --card-black: #15181e;
-    --btn-fold: linear-gradient(180deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%);
+    --btn-fold: linear-gradient(180deg, #475569 0%, #334155 50%, #1e293b 100%);
     --btn-call: linear-gradient(180deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
-    --btn-raise: linear-gradient(180deg, #22c55e 0%, #16a34a 50%, #15803d 100%);
+    --btn-raise: linear-gradient(180deg, #0284c7 0%, #0369a1 50%, #075985 100%);
     --text-light: #f8fafc;
     --text-muted: #94a3b8;
 }
@@ -28,7 +28,7 @@ html, body {
     width: 100vw;
     height: 100vh;
     height: 100dvh;
-    background: var(--bg-dark);
+    background: var(--wallpaper-grad);
     color: var(--text-light);
     overflow: hidden;
     position: fixed;
@@ -190,7 +190,7 @@ body {
 }
 
 /* =================================================== */
-/* GAME ARENA & CASINO TABLE (Landscape Optimized)    */
+/* GAME ARENA & POKERIST CASINO TABLE (5-Seat Layout)  */
 /* =================================================== */
 .game-arena {
     flex: 1;
@@ -205,21 +205,22 @@ body {
     justify-content: center;
     align-items: center;
     position: relative;
-    padding: 8px 12px;
+    padding: 6px 10px;
 }
 
 .poker-table {
     width: 100%;
-    max-width: 960px;
+    max-width: 980px;
     height: 100%;
-    max-height: 460px;
+    max-height: 480px;
     background: var(--table-felt);
-    border-radius: 230px;
-    border: 14px solid #3d2110;
+    border-radius: 240px;
+    border: 15px solid #414e5f;
     box-shadow: 
-        inset 0 0 50px rgba(0, 0, 0, 0.85),
-        0 12px 35px rgba(0, 0, 0, 0.9),
-        0 0 0 3px var(--gold-border);
+        inset 0 0 55px rgba(0, 0, 0, 0.7),
+        0 14px 45px rgba(0, 0, 0, 0.95),
+        0 0 0 2px rgba(255, 255, 255, 0.18),
+        0 0 0 4px #26303d;
     position: relative;
     display: flex;
     justify-content: center;
@@ -228,30 +229,124 @@ body {
 
 .table-felt-inner-line {
     position: absolute;
-    width: calc(100% - 48px);
-    height: calc(100% - 48px);
-    border-radius: 200px;
-    border: 1.5px dashed rgba(245, 158, 11, 0.22);
+    width: calc(100% - 44px);
+    height: calc(100% - 44px);
+    border-radius: 215px;
+    border: 1.5px solid rgba(255, 255, 255, 0.22);
     pointer-events: none;
 }
 
-/* Table Center: Pot & Community Cards */
+/* Watermark Text on Felt (Pokerist Style) */
+.table-felt-watermark {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none;
+    opacity: 0.18;
+    z-index: 1;
+    transform: translateY(-44px);
+}
+
+.wm-title {
+    font-size: 1.7rem;
+    font-weight: 900;
+    letter-spacing: 5px;
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.wm-sub {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: #cbd5e1;
+}
+
+/* Dealer Station at Top Center Behind Rim */
+.dealer-station {
+    position: absolute;
+    top: -22px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 6;
+    pointer-events: none;
+}
+
+.dealer-avatar-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.dealer-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    border: 2px solid #94a3b8;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+}
+
+.dealer-name-tag {
+    margin-top: -6px;
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 6px;
+    padding: 1px 6px;
+    font-size: 0.55rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    color: #e2e8f0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.dealer-tray {
+    margin-top: 2px;
+    width: 30px;
+    height: 10px;
+    background: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 2px;
+}
+
+/* Table Center: Board, Pot & Community Cards */
 .table-center {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     z-index: 2;
-    transform: translateY(-8px);
+    transform: translateY(-4px);
+}
+
+.center-hand-rank {
+    background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+    border: 1.5px solid var(--gold);
+    border-radius: 14px;
+    padding: 2px 14px;
+    font-size: 0.72rem;
+    font-weight: 900;
+    color: #fbbf24;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.6);
 }
 
 .pot-display {
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.75);
     border: 1.5px solid var(--gold);
     padding: 3px 16px;
     border-radius: 20px;
-    font-size: 0.95rem;
-    font-weight: 800;
+    font-size: 0.9rem;
+    font-weight: 900;
     color: var(--gold);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
     display: flex;
@@ -270,7 +365,7 @@ body {
 .community-card-slot {
     width: 58px;
     height: 84px;
-    border: 1.5px dashed rgba(255, 255, 255, 0.18);
+    border: 1.5px dashed rgba(255, 255, 255, 0.22);
     border-radius: 6px;
     display: flex;
     align-items: center;
@@ -278,53 +373,102 @@ body {
 }
 
 .dealer-announcement {
-    background: rgba(7, 10, 15, 0.85);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 3px 12px;
-    border-radius: 10px;
-    font-size: 0.75rem;
-    color: #e2e8f0;
+    background: linear-gradient(180deg, #172a42 0%, #0d1a2b 100%);
+    border: 1.5px solid rgba(148, 163, 184, 0.35);
+    padding: 4px 14px;
+    border-radius: 12px;
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: #f1f5f9;
     text-align: center;
     max-width: 320px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+}
+
+.dealer-announcement.prompt-active {
+    background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
+    border-color: #93c5fd;
+    color: #ffffff;
+    box-shadow: 0 0 16px rgba(37, 99, 235, 0.6);
+    animation: prompt-pulse 1.4s infinite;
+}
+
+@keyframes prompt-pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+    100% { transform: scale(1); }
 }
 
 /* =================================================== */
-/* PLAYER SEATS (Zynga-Style Circular/Pill Design)     */
+/* 5 PLAYER SEATS (Pokerist Oval Positions)           */
 /* =================================================== */
 .seat {
     position: absolute;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
+    gap: 3px;
     z-index: 4;
 }
 
 /* SEAT POSITIONS */
-.seat-top-left {
-    top: 6px;
-    left: 14%;
+.seat-mid-left {
+    top: 50%;
+    left: 8px;
+    transform: translateY(-50%);
 }
 
-.seat-top-center {
+.seat-top-left {
     top: 6px;
-    left: 50%;
-    transform: translateX(-50%);
+    left: 17%;
 }
 
 .seat-top-right {
     top: 6px;
-    right: 14%;
+    right: 17%;
+}
+
+.seat-mid-right {
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
 }
 
 .seat-bottom-center {
-    bottom: 6px;
+    bottom: 4px;
     left: 50%;
     transform: translateX(-50%);
+}
+
+/* Pokerist THIS IS YOU Pointer */
+.this-is-you-pill {
+    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: #ffffff;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.62rem;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    margin-bottom: 2px;
+    animation: bounce-subtle 2s infinite ease-in-out;
+}
+
+.this-is-you-arrow {
+    font-size: 0.55rem;
+}
+
+@keyframes bounce-subtle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
 }
 
 .player-badge {
@@ -486,26 +630,50 @@ body {
     position: relative;
 }
 
-/* Bet Chips In Front of Seat */
+/* Bet Chips In Front of Seat (Pokerist Realistic Discs) */
 .bet-chips {
     position: absolute;
-    background: rgba(0, 0, 0, 0.8);
-    border: 1px solid var(--gold);
-    border-radius: 10px;
-    padding: 1px 6px;
-    font-size: 0.7rem;
-    color: var(--gold);
-    font-weight: 800;
-    display: flex;
+    background: rgba(10, 15, 26, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 14px;
+    padding: 2px 7px;
+    font-size: 0.72rem;
+    color: #ffffff;
+    font-weight: 900;
+    display: inline-flex;
     align-items: center;
-    gap: 3px;
+    gap: 4px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.7);
     z-index: 5;
 }
 
-.seat-top-left .bet-chips { bottom: -20px; left: 50%; transform: translateX(-50%); }
-.seat-top-center .bet-chips { bottom: -20px; left: 50%; transform: translateX(-50%); }
-.seat-top-right .bet-chips { bottom: -20px; left: 50%; transform: translateX(-50%); }
-.seat-bottom-center .bet-chips { top: -20px; left: 50%; transform: translateX(-50%); }
+.chip-disc {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px dashed rgba(255, 255, 255, 0.85);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    flex-shrink: 0;
+}
+
+.chip-disc.red { background: #ef4444; }
+.chip-disc.blue { background: #3b82f6; }
+.chip-disc.green { background: #10b981; }
+.chip-disc.orange { background: #f97316; }
+.chip-disc.gold { background: #f59e0b; }
+
+.bet-val {
+    color: #f8fafc;
+    font-size: 0.72rem;
+    font-weight: 900;
+}
+
+/* Offsets for 5 seats on felt */
+.seat-mid-left .bet-chips { top: 50%; left: calc(100% + 10px); transform: translateY(-50%); }
+.seat-top-left .bet-chips { bottom: -24px; left: 50%; transform: translateX(-50%); }
+.seat-top-right .bet-chips { bottom: -24px; left: 50%; transform: translateX(-50%); }
+.seat-mid-right .bet-chips { top: 50%; right: calc(100% + 10px); transform: translateY(-50%); }
+.seat-bottom-center .bet-chips { top: -26px; left: 50%; transform: translateX(-50%); }
 
 /* Dealer Button */
 .dealer-button {
@@ -527,7 +695,7 @@ body {
 }
 
 /* =================================================== */
-/* PLAYING CARDS                                       */
+/* PLAYING CARDS (Tilted & Fanned - Pokerist Inspired) */
 /* =================================================== */
 .poker-card {
     width: 58px;
@@ -540,9 +708,63 @@ body {
     box-sizing: border-box;
 }
 
+/* Opponent Hole Cards: Compact & Overlapped */
+.seat:not(.seat-bottom-center) .hole-cards {
+    display: flex;
+    gap: 0;
+}
+
+.seat:not(.seat-bottom-center) .poker-card {
+    width: 44px;
+    height: 64px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+.seat:not(.seat-bottom-center) .card-rank {
+    font-size: 0.75rem;
+}
+
+.seat:not(.seat-bottom-center) .card-corner-suit {
+    width: 7px;
+    height: 7px;
+}
+
+.card-tilt-left {
+    transform: rotate(-6deg) translateX(3px);
+}
+
+.card-tilt-right {
+    transform: rotate(6deg) translateX(-3px);
+    margin-left: -10px;
+}
+
+/* User Cards: Large, Prominent, Tilted */
+.user-cards {
+    display: flex;
+    gap: 0;
+    position: relative;
+}
+
 .user-cards .poker-card {
-    width: 64px;
-    height: 92px;
+    width: 66px;
+    height: 94px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.user-cards .card-tilt-left {
+    transform: rotate(-6deg) translateY(-2px);
+}
+
+.user-cards .card-tilt-right {
+    transform: rotate(6deg) translateY(2px);
+    margin-left: -12px;
+}
+
+/* Gold Glow Highlight on Made Cards */
+.poker-card.gold-glow {
+    border: 2px solid var(--gold) !important;
+    box-shadow: 0 0 16px rgba(245, 158, 11, 0.85) !important;
 }
 
 .card-inner {
@@ -730,25 +952,26 @@ body {
 }
 
 /* =================================================== */
-/* ZYNGA-STYLE BOTTOM ACTION BAR                       */
+/* POKERIST-INSPIRED SEGMENTED ACTION BAR              */
 /* =================================================== */
 .action-bar {
     position: relative;
-    background: linear-gradient(180deg, rgba(10, 14, 22, 0.9) 0%, rgba(5, 7, 12, 0.98) 100%);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: linear-gradient(180deg, #182738 0%, #0c1520 100%);
+    border-top: 1.5px solid rgba(255, 255, 255, 0.12);
     padding: 6px 14px max(8px, env(safe-area-inset-bottom, 8px));
     display: flex;
     flex-direction: column;
     align-items: center;
     z-index: 20;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.7);
 }
 
 /* Slide-up Raise Panel */
 .raise-panel {
     display: none;
     width: 100%;
-    max-width: 520px;
-    background: rgba(15, 23, 42, 0.96);
+    max-width: 540px;
+    background: rgba(15, 23, 42, 0.98);
     border: 1.5px solid var(--gold);
     border-radius: 12px;
     padding: 8px 12px;
@@ -800,12 +1023,13 @@ body {
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.18);
     color: #f1f5f9;
-    padding: 4px 0;
+    padding: 5px 0;
     border-radius: 6px;
     font-size: 0.72rem;
-    font-weight: 700;
+    font-weight: 800;
     cursor: pointer;
     text-align: center;
+    transition: background-color 0.15s;
 }
 
 .btn-preset:active {
@@ -820,8 +1044,8 @@ body {
 }
 
 .btn-stepper {
-    width: 32px;
-    height: 32px;
+    width: 34px;
+    height: 34px;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: white;
@@ -840,20 +1064,20 @@ body {
     accent-color: var(--gold);
 }
 
-/* 3 Main Action Buttons Row */
+/* 3 Main Action Buttons Row (Pokerist Segmented) */
 .action-buttons-row {
     display: flex;
     width: 100%;
-    max-width: 520px;
-    gap: 10px;
+    max-width: 540px;
+    gap: 8px;
     justify-content: center;
 }
 
 .action-btn {
     flex: 1;
-    height: 44px;
+    height: 46px;
     border-radius: 8px;
-    border: none;
+    border: 1px solid rgba(255, 255, 255, 0.18);
     cursor: pointer;
     font-size: 0.95rem;
     font-weight: 900;
@@ -861,6 +1085,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 6px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
     transition: transform 0.1s, filter 0.1s;
     letter-spacing: 0.5px;
@@ -879,17 +1104,25 @@ body {
 
 .btn-fold {
     background: var(--btn-fold);
-    border-bottom: 3px solid #7f1d1d;
+    border-color: rgba(255, 255, 255, 0.15);
+    border-bottom: 3px solid #0f172a;
 }
 
 .btn-check-call {
     background: var(--btn-call);
+    border-color: rgba(147, 197, 253, 0.4);
     border-bottom: 3px solid #1e3a8a;
 }
 
 .btn-raise {
     background: var(--btn-raise);
-    border-bottom: 3px solid #14532d;
+    border-color: rgba(125, 211, 252, 0.4);
+    border-bottom: 3px solid #0c4a6e;
+}
+
+.btn-chevron {
+    font-size: 0.65rem;
+    opacity: 0.85;
 }
 
 /* =================================================== */

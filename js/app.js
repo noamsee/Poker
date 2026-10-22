@@ -103,6 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tablePot = document.getElementById('table-pot');
     const communityCardsContainer = document.getElementById('community-cards');
     const dealerAnnouncement = document.getElementById('dealer-announcement');
+    const centerHandRank = document.getElementById('center-hand-rank');
     // Hand Power Meter Elements
     const handPowerHud = document.getElementById('hand-power-hud');
     const powerTierBadge = document.getElementById('power-tier');
@@ -140,12 +141,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalBody = document.getElementById('modal-body');
     const btnModalNext = document.getElementById('btn-modal-next');
 
-    // Dealer Button Seat Coordinates (Landscape Optimized)
+    // Dealer Button Seat Coordinates (Pokerist 5-Player Layout)
     const dealerPositions = {
-        0: { bottom: '110px', left: '50%', transform: 'translateX(-110px)' }, // You
-        1: { top: '70px', left: '16%', transform: 'none' },                  // Alex
-        2: { top: '70px', left: '50%', transform: 'translateX(-90px)' },     // Claire
-        3: { top: '70px', right: '16%', transform: 'none' }                 // Tom
+        0: { bottom: '115px', left: '50%', transform: 'translateX(-95px)' }, // You
+        1: { top: '56%', left: '19%', transform: 'none' },                   // Alex (Mid-Left)
+        2: { top: '90px', left: '27%', transform: 'none' },                  // Claire (Top-Left)
+        3: { top: '90px', right: '27%', transform: 'none' },                 // Tom (Top-Right)
+        4: { top: '56%', right: '19%', transform: 'none' }                   // Elena (Mid-Right)
     };
 
     function updateDealerButton(dealerIdx) {
@@ -161,21 +163,27 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateBankrollDisplay() {
         const humanChips = game.players[0].chips;
         headerBankroll.textContent = `$${humanChips.toLocaleString()}`;
-        document.getElementById('chips-0').textContent = `$${humanChips.toLocaleString()}`;
-        for (let i = 1; i <= 3; i++) {
-            document.getElementById(`chips-${i}`).textContent = `$${game.players[i].chips.toLocaleString()}`;
-        }
+        game.players.forEach(p => {
+            const chipEl = document.getElementById(`chips-${p.id}`);
+            if (chipEl) chipEl.textContent = `$${p.chips.toLocaleString()}`;
+        });
     }
 
     function renderHoleCards(revealAll = false) {
         game.players.forEach(player => {
             const container = document.getElementById(`cards-${player.id}`);
+            if (!container) return;
             container.innerHTML = '';
             if (player.folded) return;
 
-            player.holeCards.forEach(card => {
+            player.holeCards.forEach((card, idx) => {
                 const faceUp = player.isHuman || revealAll;
                 const cardEl = card.render(faceUp);
+                if (idx === 0) {
+                    cardEl.classList.add('card-tilt-left');
+                } else {
+                    cardEl.classList.add('card-tilt-right');
+                }
                 container.appendChild(cardEl);
             });
         });
@@ -204,9 +212,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateBets() {
         game.players.forEach(p => {
             const betEl = document.getElementById(`bet-${p.id}`);
+            if (!betEl) return;
             if (p.currentBet > 0) {
-                betEl.style.display = 'flex';
-                betEl.querySelector('.bet-val').textContent = `$${p.currentBet}`;
+                betEl.style.display = 'inline-flex';
+                const valEl = betEl.querySelector('.bet-val');
+                if (valEl) valEl.textContent = `$${p.currentBet}`;
             } else {
                 betEl.style.display = 'none';
             }
@@ -227,6 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 powerTierBadge.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
                 powerTierBadge.style.color = '#94a3b8';
             }
+            if (centerHandRank) centerHandRank.style.display = 'none';
             return;
         }
 
@@ -247,42 +258,60 @@ document.addEventListener('DOMContentLoaded', () => {
         if (handPowerHud) {
             handPowerHud.style.borderColor = `${power.color}70`;
         }
+
+        // Center hand rank badge (Pokerist style: e.g. THREE OF A KIND, PAIR)
+        if (centerHandRank) {
+            if (game.communityCards && game.communityCards.length >= 3) {
+                const evaluated = evaluateHand([...human.holeCards, ...game.communityCards]);
+                if (evaluated) {
+                    const rankName = HAND_NAMES[evaluated.category] ? HAND_NAMES[evaluated.category].toUpperCase() : evaluated.name.toUpperCase();
+                    centerHandRank.textContent = rankName;
+                    centerHandRank.style.display = 'inline-flex';
+                } else {
+                    centerHandRank.style.display = 'none';
+                }
+            } else {
+                centerHandRank.style.display = 'none';
+            }
+        }
     }
 
     function highlightActiveTurn(playerIdx) {
-        for (let i = 0; i < 4; i++) {
+        game.players.forEach((p, i) => {
             const seat = document.getElementById(`seat-${i}`);
-            seat.classList.toggle('active-turn', i === playerIdx);
-        }
+            if (seat) seat.classList.toggle('active-turn', i === playerIdx);
+        });
     }
 
     function setPlayerStatus(player, text, className) {
         const statusTag = document.getElementById(`status-${player.id}`);
+        if (!statusTag) return;
         statusTag.textContent = text;
         statusTag.className = `player-status-tag ${className}`;
         statusTag.style.display = 'block';
 
         if (text === 'FOLD') {
-            document.getElementById(`seat-${player.id}`).classList.add('folded');
+            const seat = document.getElementById(`seat-${player.id}`);
+            if (seat) seat.classList.add('folded');
         }
     }
 
     function clearStatusesForNewRound() {
-        for (let i = 0; i < 4; i++) {
-            const player = game.players[i];
+        game.players.forEach(player => {
             if (!player.folded) {
-                const statusTag = document.getElementById(`status-${i}`);
-                statusTag.style.display = 'none';
+                const statusTag = document.getElementById(`status-${player.id}`);
+                if (statusTag) statusTag.style.display = 'none';
             }
-        }
+        });
     }
 
     function clearStatuses() {
-        for (let i = 0; i < 4; i++) {
-            const statusTag = document.getElementById(`status-${i}`);
-            statusTag.style.display = 'none';
-            document.getElementById(`seat-${i}`).classList.remove('folded');
-        }
+        game.players.forEach(player => {
+            const statusTag = document.getElementById(`status-${player.id}`);
+            if (statusTag) statusTag.style.display = 'none';
+            const seat = document.getElementById(`seat-${player.id}`);
+            if (seat) seat.classList.remove('folded');
+        });
     }
 
     function updateHumanControls(isMyTurn) {
@@ -527,14 +556,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const roundName = data.round || 'Round';
         if (data.player.isHuman) {
-            if (data.currentBet === 0) {
-                dealerAnnouncement.textContent = `[${roundName}] Your turn! Check or Bet.`;
+            const human = game.players[0];
+            const callAmount = data.currentBet - human.currentBet;
+            if (callAmount <= 0) {
+                dealerAnnouncement.textContent = 'CHECK or RAISE';
             } else {
-                dealerAnnouncement.textContent = `[${roundName}] Your turn! Current bet $${data.currentBet}.`;
+                dealerAnnouncement.textContent = `CALL $${callAmount} or RAISE`;
             }
+            dealerAnnouncement.classList.add('prompt-active');
             updateHumanControls(true);
         } else {
-            dealerAnnouncement.textContent = `[${roundName}] ${data.player.name} is thinking...`;
+            dealerAnnouncement.classList.remove('prompt-active');
+            dealerAnnouncement.textContent = `${data.player.name} is thinking...`;
             updateHumanControls(false);
         }
     });
