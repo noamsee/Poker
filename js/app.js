@@ -128,6 +128,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const btnNewHand = document.getElementById('btn-new-hand');
     const btnRebuy = document.getElementById('btn-rebuy');
+    const btnFullscreen = document.getElementById('btn-fullscreen');
+
+    // Fullscreen Toggle
+    function toggleFullscreen() {
+        if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+            const el = document.documentElement;
+            if (el.requestFullscreen) {
+                el.requestFullscreen().catch(err => console.log('Fullscreen request error:', err));
+            } else if (el.webkitRequestFullscreen) {
+                el.webkitRequestFullscreen();
+            }
+            if (btnFullscreen) btnFullscreen.textContent = '✕ Exit';
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            }
+            if (btnFullscreen) btnFullscreen.textContent = '⛶ Fullscreen';
+        }
+    }
+    if (btnFullscreen) {
+        btnFullscreen.addEventListener('click', toggleFullscreen);
+    }
+    document.addEventListener('fullscreenchange', () => {
+        if (btnFullscreen) {
+            btnFullscreen.textContent = document.fullscreenElement ? '✕ Exit' : '⛶ Fullscreen';
+        }
+    });
+    document.addEventListener('webkitfullscreenchange', () => {
+        if (btnFullscreen) {
+            btnFullscreen.textContent = document.webkitFullscreenElement ? '✕ Exit' : '⛶ Fullscreen';
+        }
+    });
 
     // History Drawer
     const historyDrawer = document.getElementById('history-drawer');
@@ -141,13 +175,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalBody = document.getElementById('modal-body');
     const btnModalNext = document.getElementById('btn-modal-next');
 
-    // Dealer Button Seat Coordinates (Pokerist 5-Player Layout)
+    // Dealer Button Seat Coordinates (Responsive Percentages)
     const dealerPositions = {
-        0: { bottom: '115px', left: '50%', transform: 'translateX(-95px)' }, // You
-        1: { top: '56%', left: '19%', transform: 'none' },                   // Alex (Mid-Left)
-        2: { top: '90px', left: '27%', transform: 'none' },                  // Claire (Top-Left)
-        3: { top: '90px', right: '27%', transform: 'none' },                 // Tom (Top-Right)
-        4: { top: '56%', right: '19%', transform: 'none' }                   // Elena (Mid-Right)
+        0: { bottom: '26%', left: '50%', transform: 'translateX(-95px)' }, // You
+        1: { top: '54%', left: '17%', transform: 'none' },                   // Alex (Mid-Left)
+        2: { top: '22%', left: '25%', transform: 'none' },                  // Claire (Top-Left)
+        3: { top: '22%', right: '25%', transform: 'none' },                 // Tom (Top-Right)
+        4: { top: '54%', right: '17%', transform: 'none' }                   // Elena (Mid-Right)
     };
 
     function updateDealerButton(dealerIdx) {

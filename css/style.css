@@ -319,52 +319,68 @@ body {
 
 /* Table Center: Board, Pot & Community Cards */
 .table-center {
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.table-center > * {
+    pointer-events: auto;
+}
+
+.center-board-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     z-index: 2;
-    transform: translateY(-4px);
 }
 
 .center-hand-rank {
     background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
     border: 1.5px solid var(--gold);
-    border-radius: 14px;
-    padding: 2px 14px;
-    font-size: 0.72rem;
+    border-radius: 12px;
+    padding: 2px 10px;
+    font-size: 0.7rem;
     font-weight: 900;
     color: #fbbf24;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
     text-transform: uppercase;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.6);
 }
 
 .pot-display {
-    background: rgba(0, 0, 0, 0.75);
+    background: rgba(0, 0, 0, 0.8);
     border: 1.5px solid var(--gold);
-    padding: 3px 16px;
-    border-radius: 20px;
-    font-size: 0.9rem;
+    padding: 2px 12px;
+    border-radius: 14px;
+    font-size: 0.82rem;
     font-weight: 900;
     color: var(--gold);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.6);
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
 }
 
 .community-cards-container {
     display: flex;
     gap: 6px;
-    min-height: 84px;
+    min-height: 78px;
     align-items: center;
     justify-content: center;
 }
 
 .community-card-slot {
-    width: 58px;
-    height: 84px;
+    width: 54px;
+    height: 78px;
     border: 1.5px dashed rgba(255, 255, 255, 0.22);
     border-radius: 6px;
     display: flex;
@@ -375,13 +391,13 @@ body {
 .dealer-announcement {
     background: linear-gradient(180deg, #172a42 0%, #0d1a2b 100%);
     border: 1.5px solid rgba(148, 163, 184, 0.35);
-    padding: 4px 14px;
+    padding: 3px 12px;
     border-radius: 12px;
-    font-size: 0.78rem;
+    font-size: 0.75rem;
     font-weight: 800;
     color: #f1f5f9;
     text-align: center;
-    max-width: 320px;
+    max-width: 300px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -423,13 +439,13 @@ body {
 }
 
 .seat-top-left {
-    top: 6px;
-    left: 17%;
+    top: 4px;
+    left: 14%;
 }
 
 .seat-top-right {
-    top: 6px;
-    right: 17%;
+    top: 4px;
+    right: 14%;
 }
 
 .seat-mid-right {
@@ -439,9 +455,28 @@ body {
 }
 
 .seat-bottom-center {
-    bottom: 4px;
+    bottom: 2px;
     left: 50%;
     transform: translateX(-50%);
+    z-index: 5;
+}
+
+/* Horizontal User Layout: Identity (Left) - Cards (Center) - Power HUD (Right) */
+.user-seat-horizontal {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 10px;
+    position: relative;
+}
+
+.user-identity-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    margin-bottom: 2px;
 }
 
 /* Pokerist THIS IS YOU Pointer */
@@ -449,16 +484,15 @@ body {
     background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
     border: 1px solid rgba(255, 255, 255, 0.4);
     color: #ffffff;
-    padding: 2px 10px;
-    border-radius: 12px;
-    font-size: 0.62rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.58rem;
     font-weight: 900;
     letter-spacing: 0.5px;
     display: flex;
     align-items: center;
-    gap: 4px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-    margin-bottom: 2px;
+    gap: 3px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
     animation: bounce-subtle 2s infinite ease-in-out;
 }
 
@@ -481,7 +515,7 @@ body {
     gap: 6px;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.6);
     position: relative;
-    min-width: 88px;
+    min-width: 84px;
 }
 
 .player-avatar {
@@ -496,7 +530,7 @@ body {
 }
 
 .player-name {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 700;
     white-space: nowrap;
     overflow: hidden;
@@ -504,7 +538,7 @@ body {
 }
 
 .player-chips {
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     color: var(--gold);
     font-weight: 800;
 }
@@ -518,6 +552,17 @@ body {
 .hand-power-hud {
     background: rgba(7, 10, 15, 0.94);
     border: 1.5px solid rgba(245, 158, 11, 0.45);
+    border-radius: 10px;
+    padding: 3px 8px;
+    width: 140px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    transition: border-color 0.3s;
+    margin-bottom: 2px;
+}
     border-radius: 10px;
     padding: 3px 8px;
     width: 175px;
@@ -1234,4 +1279,218 @@ body {
     border-radius: 6px;
     cursor: pointer;
     font-size: 0.9rem;
+}
+
+/* =================================================== */
+/* MOBILE LANDSCAPE RESPONSIVE OPTIMIZATIONS           */
+/* =================================================== */
+@media (max-height: 520px) {
+    .game-header {
+        height: 30px;
+        min-height: 30px;
+        padding: 0 8px;
+    }
+    .logo {
+        font-size: 0.85rem;
+    }
+    .header-stats {
+        gap: 6px;
+        font-size: 0.68rem;
+    }
+    .btn-header {
+        height: 22px;
+        padding: 1px 6px;
+        font-size: 0.65rem;
+    }
+    .btn-deal-hand {
+        height: 24px;
+        padding: 1px 8px;
+    }
+    .table-container {
+        padding: 1px 4px;
+    }
+    .poker-table {
+        border-width: 9px;
+        border-radius: 160px;
+        max-height: 100%;
+    }
+    .table-felt-inner-line {
+        border-radius: 140px;
+        width: calc(100% - 22px);
+        height: calc(100% - 22px);
+    }
+    .table-felt-watermark {
+        transform: translateY(-28px);
+        opacity: 0.1;
+    }
+    .wm-title {
+        font-size: 1.1rem;
+        letter-spacing: 3px;
+    }
+    .wm-sub {
+        font-size: 0.45rem;
+        letter-spacing: 1px;
+    }
+
+    /* Compact Seats on Mobile */
+    .seat-mid-left {
+        left: 4px;
+    }
+    .seat-mid-right {
+        right: 4px;
+    }
+    .seat-top-left {
+        top: 2px;
+        left: 12%;
+    }
+    .seat-top-right {
+        top: 2px;
+        right: 12%;
+    }
+    .dealer-station {
+        top: -14px;
+    }
+    .dealer-avatar {
+        width: 28px;
+        height: 28px;
+        font-size: 1rem;
+    }
+    .dealer-name-tag {
+        font-size: 0.45rem;
+        padding: 0 4px;
+        margin-top: -4px;
+    }
+    .dealer-tray {
+        display: none;
+    }
+    .player-badge {
+        padding: 2px 5px;
+        min-width: 65px;
+        gap: 3px;
+    }
+    .player-avatar {
+        font-size: 0.9rem;
+    }
+    .player-name {
+        font-size: 0.62rem;
+    }
+    .player-chips {
+        font-size: 0.6rem;
+    }
+
+    /* Compact Opponent Cards */
+    .seat:not(.seat-bottom-center) .poker-card {
+        width: 32px;
+        height: 46px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+    }
+    .seat:not(.seat-bottom-center) .card-rank {
+        font-size: 0.65rem;
+    }
+    .seat:not(.seat-bottom-center) .card-corner-suit {
+        width: 6px;
+        height: 6px;
+    }
+    .seat:not(.seat-bottom-center) .card-tilt-right {
+        margin-left: -12px;
+    }
+
+    /* Center Board on Mobile */
+    .table-center {
+        top: 45%;
+        gap: 2px;
+    }
+    .community-cards-container {
+        min-height: 52px;
+        gap: 3px;
+    }
+    .community-card-slot, .community-cards-container .poker-card {
+        width: 38px;
+        height: 54px;
+    }
+    .community-cards-container .card-rank {
+        font-size: 0.72rem;
+    }
+    .community-cards-container .card-corner-suit {
+        width: 7px;
+        height: 7px;
+    }
+    .pot-display {
+        font-size: 0.72rem;
+        padding: 1px 8px;
+    }
+    .center-hand-rank {
+        font-size: 0.6rem;
+        padding: 1px 8px;
+    }
+    .dealer-announcement {
+        font-size: 0.68rem;
+        padding: 2px 8px;
+        max-width: 220px;
+    }
+
+    /* User Row on Mobile */
+    .user-seat-horizontal {
+        gap: 6px;
+    }
+    .user-cards .poker-card {
+        width: 48px;
+        height: 68px;
+    }
+    .user-cards .card-rank {
+        font-size: 0.85rem;
+    }
+    .user-cards .card-corner-suit {
+        width: 8px;
+        height: 8px;
+    }
+    .user-cards .card-tilt-right {
+        margin-left: -14px;
+    }
+    .hand-power-hud {
+        width: 120px;
+        padding: 2px 5px;
+        gap: 1px;
+    }
+    .power-label {
+        font-size: 0.48rem;
+    }
+    .power-tier-badge {
+        font-size: 0.52rem;
+        padding: 0 4px;
+    }
+    .power-pct-text {
+        font-size: 0.6rem;
+    }
+    .power-bar-track {
+        height: 3px;
+    }
+    .power-name-text {
+        font-size: 0.6rem;
+    }
+    .this-is-you-pill {
+        font-size: 0.5rem;
+        padding: 1px 5px;
+    }
+    .action-bar {
+        padding: 4px 8px max(4px, env(safe-area-inset-bottom, 4px));
+    }
+    .action-btn {
+        height: 38px;
+        font-size: 0.85rem;
+    }
+    .bet-chips {
+        padding: 1px 5px;
+        font-size: 0.62rem;
+    }
+    .chip-disc {
+        width: 11px;
+        height: 11px;
+    }
+    .dealer-button {
+        width: 18px;
+        height: 18px;
+        font-size: 0.6rem;
+        border-width: 1.5px;
+    }
 }

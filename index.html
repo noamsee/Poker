@@ -32,6 +32,7 @@
             <div class="stat-item"><span class="stat-label">Bankroll:</span> <span id="header-bankroll" class="stat-val highlight">$1,000</span></div>
         </div>
         <div class="header-actions">
+            <button id="btn-fullscreen" class="btn-header" title="Toggle Fullscreen">⛶ Fullscreen</button>
             <button id="btn-sound-toggle" class="btn-header btn-icon" title="Toggle Sound">🔊</button>
             <button id="btn-toggle-log" class="btn-header btn-icon" title="Hand History">📜</button>
             <button id="btn-rebuy" class="btn-header">💰 Re-buy</button>
@@ -124,12 +125,14 @@
                         <div class="wm-sub">BUY-IN: $10 / $20</div>
                     </div>
 
-                    <!-- Center Hand Rank Badge (Pokerist Style: e.g. THREE OF A KIND, PAIR) -->
-                    <div class="center-hand-rank" id="center-hand-rank" style="display: none;">PAIR</div>
+                    <div class="center-board-header">
+                        <!-- Center Hand Rank Badge (Pokerist Style: e.g. THREE OF A KIND, PAIR) -->
+                        <div class="center-hand-rank" id="center-hand-rank" style="display: none;">PAIR</div>
 
-                    <div class="pot-display">
-                        <span class="pot-chips">🪙</span>
-                        <span>POT: <span id="table-pot">$0</span></span>
+                        <div class="pot-display">
+                            <span class="pot-chips">🪙</span>
+                            <span>POT: <span id="table-pot">$0</span></span>
+                        </div>
                     </div>
 
                     <div class="community-cards-container" id="community-cards">
@@ -146,37 +149,42 @@
                     </div>
                 </div>
 
-                <!-- SEAT 0: Bottom-Center (You) -->
+                <!-- SEAT 0: Bottom-Center (You) - Non-overlapping Horizontal Layout -->
                 <div class="seat seat-bottom-center" id="seat-0">
                     <div class="bet-chips" id="bet-0" style="display: none;"><span class="chip-disc gold"></span><span class="bet-val">0</span></div>
-                    
-                    <!-- Pokerist 'THIS IS YOU' Pointer Tag -->
-                    <div class="this-is-you-pill" id="this-is-you-pill">
-                        <span class="this-is-you-text">THIS IS YOU</span>
-                        <span class="this-is-you-arrow">▼</span>
-                    </div>
 
-                    <!-- DYNAMIC REAL-TIME HAND POWER METER -->
-                    <div class="hand-power-hud" id="hand-power-hud">
-                        <div class="power-hud-top">
-                            <span class="power-label">POWER</span>
-                            <span class="power-tier-badge" id="power-tier">WAITING</span>
-                            <span class="power-pct-text" id="power-pct">0%</span>
+                    <div class="user-seat-horizontal">
+                        <!-- Left: THIS IS YOU indicator + Player Badge -->
+                        <div class="user-identity-box">
+                            <div class="this-is-you-pill" id="this-is-you-pill">
+                                <span class="this-is-you-text">THIS IS YOU</span>
+                                <span class="this-is-you-arrow">▼</span>
+                            </div>
+                            <div class="player-badge user-badge">
+                                <div class="player-avatar">👤</div>
+                                <div class="player-details">
+                                    <span class="player-name">You</span>
+                                    <span class="player-chips" id="chips-0">$1000</span>
+                                </div>
+                                <div class="player-status-tag" id="status-0" style="display: none;"></div>
+                            </div>
                         </div>
-                        <div class="power-bar-track">
-                            <div class="power-bar-fill" id="power-bar-fill" style="width: 0%;"></div>
-                        </div>
-                        <div class="power-name-text" id="user-hand-name">—</div>
-                    </div>
 
-                    <div class="hole-cards user-cards" id="cards-0"></div>
-                    <div class="player-badge user-badge">
-                        <div class="player-avatar">👤</div>
-                        <div class="player-details">
-                            <span class="player-name">You</span>
-                            <span class="player-chips" id="chips-0">$1000</span>
+                        <!-- Center: Tilted Hole Cards -->
+                        <div class="hole-cards user-cards" id="cards-0"></div>
+
+                        <!-- Right: Real-Time Hand Power Meter (Beside cards, never overlapping table center!) -->
+                        <div class="hand-power-hud" id="hand-power-hud">
+                            <div class="power-hud-top">
+                                <span class="power-label">POWER</span>
+                                <span class="power-tier-badge" id="power-tier">WAITING</span>
+                                <span class="power-pct-text" id="power-pct">0%</span>
+                            </div>
+                            <div class="power-bar-track">
+                                <div class="power-bar-fill" id="power-bar-fill" style="width: 0%;"></div>
+                            </div>
+                            <div class="power-name-text" id="user-hand-name">—</div>
                         </div>
-                        <div class="player-status-tag" id="status-0" style="display: none;"></div>
                     </div>
                 </div>
 
